@@ -4,6 +4,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /*
  * =====================================================================================
@@ -17,9 +19,10 @@ import org.springframework.context.annotation.Bean;
  * and Production-ready features. Goal: "just run" with minimal setup.
  *
  * >>> NOTE ON THIS FILE <<<
- * The Java below is a CONCEPTUAL / TEACHING MODEL (plain Java) that simulates the Spring
- * Boot startup sequence and a CommandLineRunner, so you can SEE the flow. A real app uses
- * @SpringBootApplication + SpringApplication.run() and an embedded Tomcat.
+ * The Java below is a REAL, runnable Spring Boot application. @SpringBootApplication
+ * triggers component scanning + auto configuration, SpringApplication.run() boots the
+ * ApplicationContext, an @Service bean is constructor-injected into a @Component
+ * CommandLineRunner, and that runner executes once right after startup.
  *
  * -------------------------------------------------------------------------------------
  * ADVANTAGES
@@ -148,7 +151,8 @@ import org.springframework.context.annotation.Bean;
  * EXAMPLE BELOW:
  * A REAL, runnable Spring Boot application. @SpringBootApplication triggers component
  * scanning + auto configuration, SpringApplication.run(...) boots the ApplicationContext,
- * and the CommandLineRunner bean executes once right after startup.
+ * the @Service bean is discovered and constructor-injected into the @Component
+ * CommandLineRunner, and that runner executes once right after startup.
  * =====================================================================================
  */
 @SpringBootApplication
@@ -160,12 +164,39 @@ public class SpringBoot {
         SpringApplication.run(SpringBoot.class, args);
     }
 
+    /** A real business-logic bean discovered by component scanning. */
+    @Service
+    public static class GreetingService {
+        public String greet() {
+            return "initial data loaded";
+        }
+    }
+
     /**
-     * Real CommandLineRunner bean: runs ONCE after startup.
+     * Real @Component CommandLineRunner: runs ONCE after startup. The GreetingService
+     * is constructor-injected by the container (auto configuration + DI in action).
      * Use cases: initial data load, startup validation, cache initialization.
      */
+    @Component
+    public static class StartupRunner implements CommandLineRunner {
+        private final GreetingService greetingService;
+
+        public StartupRunner(GreetingService greetingService) {
+            this.greetingService = greetingService;
+        }
+
+        @Override
+        public void run(String... args) {
+            System.out.println("App started - " + greetingService.greet());
+        }
+    }
+
+    /**
+     * Alternative style: register a CommandLineRunner via an @Bean method instead of a
+     * @Component class - handy for quick startup hooks or third-party wiring.
+     */
     @Bean
-    public CommandLineRunner startupRunner() {
-        return args -> System.out.println("App started - loading initial data...");
+    public CommandLineRunner banner() {
+        return args -> System.out.println("SpringBoot example is ready.");
     }
 }

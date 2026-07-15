@@ -1,5 +1,12 @@
 package com.preperation.spring;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+
 /*
  * =====================================================================================
  *                              SPRING FRAMEWORK
@@ -7,8 +14,8 @@ package com.preperation.spring;
  *
  * WHAT IS IT?
  * -----------
- * Spring is a lightweight, open-source Java framework used for developing enterprise
- * applications. It provides:
+ * Spring is a lightweight, open-source Java framework used for developing enterprise applications.
+ * It provides:
  *      - IoC (Inversion of Control)
  *      - Dependency Injection (DI)
  *      - Transaction Management
@@ -18,9 +25,10 @@ package com.preperation.spring;
  *      - AOP (Aspect Oriented Programming)
  *
  * >>> NOTE ON THIS FILE <<<
- * The Java below is a CONCEPTUAL / TEACHING MODEL (plain Java, no real Spring container)
- * that simulates IoC, Dependency Injection and bean wiring so you can SEE how the pieces
- * fit. In a real app Spring's IoC container does all of this for you via annotations.
+ * The Java below is a REAL, runnable Spring example. It boots an actual Spring IoC
+ * container (AnnotationConfigApplicationContext), which component-scans this file,
+ * instantiates the @Service beans, and performs constructor Dependency Injection for
+ * you - resolving multiple candidates via @Primary / @Qualifier.
  *
  * -------------------------------------------------------------------------------------
  * MAIN MODULES IN SPRING
@@ -218,7 +226,7 @@ package com.preperation.spring;
  * -------------------------------------------------------------------------------------
  * QUICK Q&A (INTERVIEW)
  * -------------------------------------------------------------------------------------
- * Q1: What is Spring? -> Lightweight framework providing IoC, DI, AOP, MVC, security, etc.
+ * Q1: What is Spring?  -> Lightweight framework providing IoC, DI, AOP, MVC, security, etc.
  * Q2: What is IoC?     -> Container (not your code) creates and manages object lifecycle.
  * Q3: What is DI?      -> Dependencies are injected from outside; prefer constructor injection.
  * Q4: What is a Spring Bean? -> An object whose creation, config, DI and lifecycle are
@@ -241,59 +249,65 @@ package com.preperation.spring;
  *
  * -------------------------------------------------------------------------------------
  * EXAMPLE BELOW:
- * A tiny in-memory "IoC container" that registers beans and injects a dependency by type,
- * mimicking what Spring does with @Component/@Autowired.
+ * A REAL Spring IoC example. @Configuration + @ComponentScan makes this class a config
+ * that scans its own package for beans. AnnotationConfigApplicationContext boots the
+ * container, discovers the @Service beans, and constructor-injects PaymentService into
+ * OrderService - picking UpiPayment because it is @Primary (or CardPayment via @Qualifier).
  * =====================================================================================
  */
+@Configuration
+@ComponentScan   // scans this package for @Component/@Service/@Repository/@Controller beans
 public class SpringFramework {
 
-    /** A dependency (like a @Service bean). */
-    static class PaymentService {
-        String pay(String order) { return "Paid for " + order; }
+    /** The dependency contract - two implementations exist, so Spring must pick one. */
+    public interface PaymentService {
+        String pay(String order);
     }
 
-    /** A bean that DEPENDS on PaymentService (injected via constructor). */
-    static class OrderService {
+    /** Default choice when several PaymentService beans match (constructor by type). */
+    @Service
+    @Primary
+    public static class UpiPayment implements PaymentService {
+        public String pay(String order) { return "Paid via UPI for " + order; }
+    }
+
+    /** Selected explicitly by name via @Qualifier("card"). */
+    @Service
+    @Qualifier("card")
+    public static class CardPayment implements PaymentService {
+        public String pay(String order) { return "Paid via Card for " + order; }
+    }
+
+    /** A bean that DEPENDS on PaymentService, injected by the container. */
+    @Service
+    public static class OrderService {
         private final PaymentService paymentService;   // final -> mandatory & immutable
 
-        OrderService(PaymentService paymentService) {  // constructor injection
+        // Constructor injection (@Autowired optional for a single constructor since 4.3).
+        // Two candidates exist; @Primary makes UpiPayment the default match here.
+        public OrderService(PaymentService paymentService) {
             this.paymentService = paymentService;
         }
 
-        String placeOrder(String order) {
+        public String placeOrder(String order) {
             return "OrderService -> " + paymentService.pay(order);
         }
     }
 
-    /**
-     * A minimal IoC container: stores singleton beans by type and hands them out.
-     * This is the essence of what Spring's ApplicationContext does (in ~15 lines).
-     */
-    static class MiniContainer {
-        private final java.util.Map<Class<?>, Object> beans = new java.util.HashMap<>();
-
-        <T> void register(Class<T> type, T bean) {
-            beans.put(type, bean);
-            System.out.println("[container] registered bean: " + type.getSimpleName());
-        }
-
-        @SuppressWarnings("unchecked")
-        <T> T getBean(Class<T> type) { return (T) beans.get(type); }
-    }
-
     public static void main(String[] args) {
-        // ---- Inversion of Control: the container creates & manages beans ----
-        MiniContainer context = new MiniContainer();
+        // ---- Inversion of Control: the real Spring container creates & manages beans ----
+        try (AnnotationConfigApplicationContext context =
+                     new AnnotationConfigApplicationContext(SpringFramework.class)) {
 
-        PaymentService paymentService = new PaymentService();
-        context.register(PaymentService.class, paymentService);
+            // ---- Dependency Injection already happened during context startup ----
+            System.out.println("\n== Bean wiring result ==");
+            OrderService orderService = context.getBean(OrderService.class);
+            System.out.println(orderService.placeOrder("order#1001"));
 
-        // ---- Dependency Injection: dependency supplied from OUTSIDE the class ----
-        OrderService orderService = new OrderService(context.getBean(PaymentService.class));
-        context.register(OrderService.class, orderService);
-
-        // ---- Use the wired bean (as a Controller/Service would) ----
-        System.out.println("\n== Bean wiring result ==");
-        System.out.println(context.getBean(OrderService.class).placeOrder("order#1001"));
+            // The non-primary bean still lives in the container; fetch it by its type.
+            // (At an injection point you'd select it with @Qualifier("card").)
+            PaymentService card = context.getBean(CardPayment.class);
+            System.out.println("Non-primary CardPayment bean -> " + card.pay("order#2002"));
+        }
     }
 }
