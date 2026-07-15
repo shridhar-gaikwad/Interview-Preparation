@@ -6,7 +6,7 @@ Java class with clear comments and a small demo, so you can *read it and run it*
 ## 📌 What's Inside
 
 ### ☕ Java
-Core language notes — OOP, Collections, Multithreading, and Java 8 / Streams.
+Core language notes — JVM, Collections, Multithreading, and Java 8 / Streams.
 The foundation everything else builds on.
 
 ### 🌱 Spring Framework
