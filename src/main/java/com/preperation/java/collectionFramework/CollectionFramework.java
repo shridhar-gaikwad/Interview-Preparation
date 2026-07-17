@@ -70,7 +70,6 @@ import java.util.TreeSet;
  *   When to use     | Order + duplicates  | Uniqueness          | Processing order    | Map keys to values
  *
  *   *LinkedHashSet keeps insertion order; TreeSet keeps sorted order.
- *
  * -------------------------------------------------------------------------------------
  * ARRAYLIST vs LINKEDLIST
  * -------------------------------------------------------------------------------------
@@ -198,6 +197,8 @@ public class CollectionFramework {
         linkedList.addFirst("HEAD");
         linkedList.addLast("TAIL");
         System.out.println("LinkedList (deque) : " + linkedList);
+        System.out.println("get(1) by index    : " + linkedList.get(2));
+
     }
 
     /** SET: unique elements. HashSet (no order), LinkedHashSet (insertion), TreeSet (sorted). */
@@ -207,8 +208,9 @@ public class CollectionFramework {
         Set<String> hashSet = new HashSet<>();
         hashSet.add("Java");
         hashSet.add("Spring");
+        hashSet.add("Microservice");
         hashSet.add("Java");                           // duplicate ignored
-        System.out.println("HashSet (no order)      : " + hashSet);
+        System.out.println("HashSet (no order)    : " + hashSet);
 
         Set<String> linkedHashSet = new LinkedHashSet<>();
         linkedHashSet.add("C");
@@ -259,6 +261,7 @@ public class CollectionFramework {
         linkedHashMap.put(3, "C");
         linkedHashMap.put(1, "A");
         linkedHashMap.put(2, "B");
+
         System.out.println("LinkedHashMap (insertion): " + linkedHashMap);
 
         Map<Integer, String> treeMap = new TreeMap<>(linkedHashMap);

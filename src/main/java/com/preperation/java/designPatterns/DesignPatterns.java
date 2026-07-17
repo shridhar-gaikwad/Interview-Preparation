@@ -57,6 +57,10 @@ package com.preperation.java.designPatterns;
  *   BEST Singleton (Enum) -> thread-safe, serialization-safe, reflection-safe, simple:
  *      public enum Singleton { INSTANCE; }
  *
+ * Ways thread-safety/uniqueness can be broken:
+ *      Reflection (setAccessible on constructor),
+ *      Serialization (creates new instance on deserialize — fix with readResolve()), and Cloning.
+ *
  * =====================================================================================
  * 2) BUILDER (Creational)
  * =====================================================================================

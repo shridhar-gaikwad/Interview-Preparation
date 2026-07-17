@@ -25,6 +25,8 @@ import java.lang.ref.WeakReference;
  *   Best use      | Fixed text          | Single-threaded edits    | Multi-threaded edits
  *   Method        | + , concat()        | append()                 | append()
  *
+ * intern() returns the reference from the String pool. So "Hello" == new String("Hello").intern() would be true.
+ * It forces a heap string to point to (or be added to) the pool.
  * -------------------------------------------------------------------------------------
  * GARBAGE COLLECTION (GC)
  * -------------------------------------------------------------------------------------
