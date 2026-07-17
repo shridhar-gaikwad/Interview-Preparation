@@ -78,7 +78,8 @@ import java.lang.ref.WeakReference;
  * -------------------------------------------------------------------------------------
  *   1. Bootstrap  -> core JDK (java.lang, java.util, java.io)  [shown as null loader]
  *   2. Extension/Platform -> JDK extensions
- *   3. Application -> classes from the classpath (your project's target/classes)
+ *   3. Application -> classes from the classpath (your project's target/classes) /
+ *                      loads your application code and third-party JARs.
  *
  *   CLASS LOADING PROCESS (3 phases):
  *      1. LOADING        read .class bytes, create Class object, store metadata in

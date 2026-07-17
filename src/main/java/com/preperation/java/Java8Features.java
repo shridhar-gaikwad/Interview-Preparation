@@ -60,8 +60,8 @@ import java.util.stream.Stream;
  * -------------------------------------------------------------------------------------
  * 4) STREAMS API
  * -------------------------------------------------------------------------------------
- * A sequence of elements supporting functional-style operations.  Flow:
- *      Source -> Intermediate ops (lazy) -> Terminal op (triggers execution)
+ * A sequence of elements supporting functional-style operations.
+ * Flow:    Source -> Intermediate ops (lazy) -> Terminal op (triggers execution)
  *   Intermediate (return Stream): filter, map, flatMap, distinct, sorted, peek, limit, skip
  *   Terminal (produce result):    collect, count, forEach, reduce, findFirst, findAny,
  *                                 anyMatch, allMatch
