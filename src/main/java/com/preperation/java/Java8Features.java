@@ -60,8 +60,14 @@ import java.util.stream.Stream;
  * -------------------------------------------------------------------------------------
  * 4) STREAMS API
  * -------------------------------------------------------------------------------------
- * A sequence of elements supporting functional-style operations.
+ * Stream API was introduced in Java 8 to process collections in a functional and declarative manner.
+ * It supports operations like filter, map, sort, reduce, and collect. Streams do not store data;
+ * they process data from a source such as a collection. Stream operations are categorized into
+ * intermediate operations like filter and map, and terminal operations like collect and forEach.
+ * Stream API also supports parallel processing through parallel streams, making code more readable and
+ * efficient.
  * Flow:    Source -> Intermediate ops (lazy) -> Terminal op (triggers execution)
+ *
  *   Intermediate (return Stream): filter, map, flatMap, distinct, sorted, peek, limit, skip
  *   Terminal (produce result):    collect, count, forEach, reduce, findFirst, findAny,
  *                                 anyMatch, allMatch

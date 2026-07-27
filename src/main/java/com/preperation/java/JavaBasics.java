@@ -25,15 +25,15 @@ import java.lang.ref.WeakReference;
  *   Best use      | Fixed text          | Single-threaded edits    | Multi-threaded edits
  *   Method        | + , concat()        | append()                 | append()
  *
- * intern() returns the reference from the String pool. So "Hello" == new String("Hello").intern() would be true.
+ * intern() returns the reference from the String pool. So "Hello" == new String("Hello").intern() //true.
  * It forces a heap string to point to (or be added to) the pool.
  * -------------------------------------------------------------------------------------
  * GARBAGE COLLECTION (GC)
  * -------------------------------------------------------------------------------------
  * Automatic memory management that removes UNREACHABLE objects from HEAP memory.
- *   Benefits: prevents memory leaks, automatic management, improves stability, no manual
- *             deallocation.
- *   "Garbage" = an object no longer reachable from any live reference:
+ *   Benefits: prevents memory leaks, automatic management, improves stability, no manual deallocation.
+ *   "Garbage" = an object no longer reachable from any live reference (if reachable from a thread,
+ *     static var or local var it's LIVE, otherwise it's garbage)
  *      Employee e = new Employee();
  *      e = null;   // object now eligible for GC
  *   GC works ONLY on Heap (not Stack).
@@ -97,7 +97,7 @@ import java.lang.ref.WeakReference;
  * -------------------------------------------------------------------------------------
  *   Heap        -> objects + instance variables (shared by threads, GC applies)
  *   Stack       -> method calls, local variables, references (per-thread, no GC)
- *   Method Area -> class metadata, static variables, method info
+ *   Method Area -> class metadata, static variables, method info.
  *
  * -------------------------------------------------------------------------------------
  * QUICK Q&A (INTERVIEW)
@@ -106,12 +106,12 @@ import java.lang.ref.WeakReference;
  *     reliable HashMap keys.
  * Q2: How does GC find garbage? -> Reachability analysis: if reachable from a thread,
  *     static var or local var it's LIVE, otherwise it's garbage.
- * Q3: finalize()? -> Object method called by GC before removal; deprecated since Java 9
- *     (unpredictable). Was used to close files / DB connections.
+ * Q3: finalize()? -> Object method called by GC before removal; Was used to close files / DB connections.
+                    deprecated since Java 9 (unpredictable).
  * Q4: System.gc()? -> Only REQUESTS a GC; JVM may ignore it.
  * Q5: OutOfMemoryError? -> Thrown when JVM cannot allocate memory (heap exhausted).
- * Q6: Memory leak? -> Objects kept referenced unnecessarily (e.g. a static List that is
- *     never cleared) so heap keeps growing.
+ * Q6: Memory leak? -> Objects kept referenced unnecessarily (e.g. a static List that is never cleared)
+       so heap keeps growing.
  * Q7: throw vs throws? -> throws DECLARES the exception on the method; throw actually
  *     THROWS an instance.
  * Q8: Heap vs Stack? -> Heap: objects, shared, large, GC, slower. Stack: locals,
@@ -119,7 +119,7 @@ import java.lang.ref.WeakReference;
  * Q9: Metaspace? -> Stores class & method metadata (replaced PermGen in Java 8).
  *
  * ONE-LINER SUMMARY:
- * The JVM loads/links/initializes classes, runs bytecode, and auto-manages heap memory
+ * The JVM loads/links/initializes classes, runs bytecode, and auto-manages heap memory.
  * via GC (Young/Old generations, G1 by default); Strings are immutable while
  * StringBuilder/StringBuffer are mutable (Buffer being the thread-safe one).
  *
