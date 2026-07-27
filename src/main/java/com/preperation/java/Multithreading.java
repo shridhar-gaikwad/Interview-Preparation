@@ -96,6 +96,46 @@ import java.util.concurrent.atomic.AtomicInteger;
  *   async with composition: supplyAsync(...).thenApply(...).thenCombine(...).
  *
  * -------------------------------------------------------------------------------------
+ * RUNNABLE vs CALLABLE vs FUTURE vs COMPLETABLEFUTURE  (VERY IMPORTANT)
+ * -------------------------------------------------------------------------------------
+ *   RUNNABLE (java.lang, Java 1.0)
+ *     - Functional interface: void run(); NO return value, CANNOT throw checked exceptions.
+ *     - Use for fire-and-forget tasks. Run via new Thread(runnable) or executor.execute().
+ *         Runnable r = () -> System.out.println("task");
+ *
+ *   CALLABLE<V> (java.util.concurrent, Java 5)
+ *     - Functional interface: V call() throws Exception; RETURNS a value + CAN throw
+ *       checked exceptions.
+ *     - Submitted to an ExecutorService -> returns a Future.
+ *         Callable<Integer> c = () -> 10 + 20;
+ *
+ *   FUTURE<V> (Java 5) - a handle to a result that will be ready LATER
+ *     - get()        -> BLOCKS until the result is available (get(timeout) to bound wait).
+ *     - isDone()     -> has it finished?     cancel() -> attempt to cancel.
+ *     - LIMITATIONS: get() is blocking; no chaining/combining; no built-in callbacks;
+ *       no manual completion. -> CompletableFuture fixes these.
+ *
+ *   COMPLETABLEFUTURE<V> (Java 8) - non-blocking, composable async
+ *     - Start async : supplyAsync(() -> value)   |  runAsync(() -> {})  (no result)
+ *     - Transform   : thenApply(fn)              (map the result)
+ *     - Chain async : thenCompose(fn)            (flat-map: avoids nested futures)
+ *     - Consume     : thenAccept(consumer) / thenRun(runnable)
+ *     - Combine two : thenCombine(other, biFn)
+ *     - Wait for all/any : allOf(...) / anyOf(...)
+ *     - Errors      : exceptionally(ex -> fallback) / handle((res, ex) -> ...)
+ *     - Callbacks run WITHOUT blocking a thread on get().
+ *         CompletableFuture.supplyAsync(() -> "hi").thenApply(String::toUpperCase);
+ *
+ *   QUICK COMPARISON:
+ *     Feature        | Runnable | Callable | Future        | CompletableFuture
+ *     -------------- | -------- | -------- | ------------- | -----------------------------
+ *     Returns value  | No       | Yes      | holds result  | holds result
+ *     Checked throws | No       | Yes      | -             | via exceptionally/handle
+ *     Blocking       | -        | -        | Yes (get())   | No (callbacks/compose)
+ *     Chaining       | No       | No       | No            | Yes (thenApply/thenCompose)
+ *     Since          | 1.0      | 5        | 5             | 8
+ *
+ * -------------------------------------------------------------------------------------
  * CONCURRENT COLLECTIONS
  * -------------------------------------------------------------------------------------
  *   ConcurrentHashMap, CopyOnWriteArrayList, BlockingQueue (used for producer-consumer).
@@ -129,6 +169,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  *     Callable) returns a Future.
  * Q15: shutdown() vs shutdownNow()? -> shutdown() stops accepting new tasks but finishes
  *     existing ones (safer); shutdownNow() tries to stop everything immediately.
+ * Q16: Future vs CompletableFuture? -> Future.get() is blocking with no chaining;
+ *     CompletableFuture is non-blocking and composable (thenApply/thenCompose/thenCombine,
+ *     allOf/anyOf, exceptionally/handle) and supports manual completion + callbacks.
+ * Q17: thenApply vs thenCompose? -> thenApply maps to a plain value; thenCompose flat-maps
+ *     when the function itself returns a CompletableFuture (avoids nested futures).
  *
  * ONE-LINER SUMMARY:
  * Multithreading runs tasks concurrently over shared memory; correctness needs
