@@ -56,8 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * SYNCHRONIZATION  (mutual exclusion + memory visibility)
  * -------------------------------------------------------------------------------------
  *   1. Synchronized method  -> public synchronized void m() {}      (lock on 'this')
- *   2. Synchronized block   -> synchronized(this){ ... }            (lock only critical
- *                              section -> better performance, PREFERRED)
+ *   2. Synchronized block   -> synchronized(this){ ... }            (lock only critical section -> better performance, PREFERRED)
  *   3. Static synchronized  -> public static synchronized void m(){} (lock on Class object)
  *
  * -------------------------------------------------------------------------------------
@@ -104,8 +103,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *         Runnable r = () -> System.out.println("task");
  *
  *   CALLABLE<V> (java.util.concurrent, Java 5)
- *     - Functional interface: V call() throws Exception; RETURNS a value + CAN throw
- *       checked exceptions.
+ *     - Functional interface: V call() throws Exception; RETURNS a value + CAN throw checked exceptions.
  *     - Submitted to an ExecutorService -> returns a Future.
  *         Callable<Integer> c = () -> 10 + 20;
  *
@@ -162,22 +160,20 @@ import java.util.concurrent.atomic.AtomicInteger;
  *     sync to avoid overflow/underflow/races. Modern solution: BlockingQueue.
  * Q11: Why while instead of if around wait()? -> Guards against spurious wakeups /
  *     multiple threads waking; recheck condition before proceeding.
- * Q12: Callable vs Runnable? -> Runnable.run() returns void; Callable.call() returns a
- *     value and may throw checked exceptions.
+ * Q12: Runnable vs Callable? -> Runnable.run() returns void; Callable.call() returns a value and may throw checked exceptions.
  * Q13: Is Future.get() blocking? -> Yes, until the result is ready.
- * Q14: execute() vs submit()? -> execute(Runnable) returns nothing; submit(Runnable/
- *     Callable) returns a Future.
- * Q15: shutdown() vs shutdownNow()? -> shutdown() stops accepting new tasks but finishes
- *     existing ones (safer); shutdownNow() tries to stop everything immediately.
+ * Q14: execute() vs submit()? -> execute(Runnable) returns nothing; submit(Runnable/Callable) returns a Future.
+ * Q15: shutdown() vs shutdownNow()? -> shutdown() stops accepting new tasks but finishes existing ones (safer);
+ *                                      shutdownNow() tries to stop everything immediately.
  * Q16: Future vs CompletableFuture? -> Future.get() is blocking with no chaining;
- *     CompletableFuture is non-blocking and composable (thenApply/thenCompose/thenCombine,
- *     allOf/anyOf, exceptionally/handle) and supports manual completion + callbacks.
+ *      CompletableFuture is non-blocking and composable (thenApply/thenCompose/thenCombine, allOf/anyOf, exceptionally/handle) and
+ *      supports manual completion + callbacks.
  * Q17: thenApply vs thenCompose? -> thenApply maps to a plain value; thenCompose flat-maps
  *     when the function itself returns a CompletableFuture (avoids nested futures).
  *
  * ONE-LINER SUMMARY:
- * Multithreading runs tasks concurrently over shared memory; correctness needs
- * synchronization (locks/volatile/atomics/wait-notify), and the Executor framework +
+ * Multithreading runs tasks concurrently over shared memory;
+ * correctness needs synchronization (locks/volatile/atomics/wait-notify), and the Executor framework +
  * BlockingQueue give safe, reusable, higher-level concurrency.
  *
  * -------------------------------------------------------------------------------------

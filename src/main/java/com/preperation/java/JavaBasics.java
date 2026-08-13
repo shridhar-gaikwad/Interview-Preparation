@@ -84,8 +84,7 @@ import java.lang.ref.WeakReference;
  *                     also loads your application code and third-party JARs.
  *
  *   CLASS LOADING PROCESS (3 phases):
- *      1. LOADING        read .class bytes, create Class object, store metadata in
- *                        Method Area.
+ *      1. LOADING        read .class bytes, create Class object, store metadata in Method Area.
  *      2. LINKING
  *           a. Verification -> bytecode valid & safe? (else VerifyError)
  *           b. Preparation  -> allocate static vars with DEFAULT values (int -> 0)
@@ -102,10 +101,11 @@ import java.lang.ref.WeakReference;
  * -------------------------------------------------------------------------------------
  * QUICK Q&A (INTERVIEW)
  * -------------------------------------------------------------------------------------
- * Q1: Why is String immutable? -> Security, thread safety, String pool optimization,
- *     reliable HashMap keys.
- * Q2: How does GC find garbage? -> Reachability analysis: if reachable from a thread,
- *     static var or local var it's LIVE, otherwise it's garbage.
+ * Q1: Why is String immutable? -> Security Strings are widely used for sensitive information like: Usernames, Passwords,
+ *     Database URLs, File paths, Network connections), thread safety (Immutable objects are naturally thread-safe),
+ *     String pool optimization (to save memory), reliable HashMap keys.
+ * Q2: How does GC find garbage? -> Reachability analysis: if reachable from a thread, static var or local var it's LIVE,
+ *     otherwise it's garbage.
  * Q3: finalize()? -> Object method called by GC before removal; Was used to close files / DB connections.
                     deprecated since Java 9 (unpredictable).
  * Q4: System.gc()? -> Only REQUESTS a GC; JVM may ignore it.
@@ -114,8 +114,8 @@ import java.lang.ref.WeakReference;
        so heap keeps growing.
  * Q7: throw vs throws? -> throws DECLARES the exception on the method; throw actually
  *     THROWS an instance.
- * Q8: Heap vs Stack? -> Heap: objects, shared, large, GC, slower. Stack: locals,
- *     per-thread, small, no GC, faster.
+ * Q8: Heap vs Stack? -> Heap: objects, shared, large, GC, slower.
+ *                      Stack: locals, per-thread, small, no GC, faster.
  * Q9: Metaspace? -> Stores class & method metadata (replaced PermGen in Java 8).
  *
  * ONE-LINER SUMMARY:
