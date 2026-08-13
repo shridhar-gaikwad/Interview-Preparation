@@ -40,15 +40,15 @@ import java.lang.ref.WeakReference;
  *
  *   JVM MEMORY STRUCTURE:
  *      JVM Memory
- *       +-- Heap
+ *       +-- Heap                   (Objects, instance variables, String Constant Pool)
  *       |    +-- Young Generation
  *       |    |     +-- Eden        (new objects; when full -> MINOR GC)
  *       |    |     +-- S0 Survivor (objects surviving minor GC)
  *       |    |     +-- S1 Survivor
  *       |    +-- Old Generation    (long-lived: singletons, caches, Spring beans;
  *       |                           when full -> MAJOR / FULL GC)
- *       +-- Stack
- *       +-- Metaspace              (class & method metadata)
+ *       +-- Stack                  (local variable, method calls, objects reference, Method parameters, Return information)
+ *       +-- Metaspace              (class metadata (name, implemented class/interface, modifier) & method metadata (name, signature, modifier))
  *
  *   COMMON COLLECTORS:
  *      Serial GC      -XX:+UseSerialGC     single thread, small apps
@@ -79,9 +79,9 @@ import java.lang.ref.WeakReference;
  * CLASS LOADERS
  * -------------------------------------------------------------------------------------
  *   1. Bootstrap  -> core JDK (java.lang, java.util, java.io)  [shown as null loader]
- *   2. Extension/Platform -> JDK extensions
+ *   2. Extension/Platform -> JDK extensions (java.sql, java.xml, java.desktop)
  *   3. Application -> classes from the classpath (your project's target/classes) /
- *                      loads your application code and third-party JARs.
+ *                     also loads your application code and third-party JARs.
  *
  *   CLASS LOADING PROCESS (3 phases):
  *      1. LOADING        read .class bytes, create Class object, store metadata in
