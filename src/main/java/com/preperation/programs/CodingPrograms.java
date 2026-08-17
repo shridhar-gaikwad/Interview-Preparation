@@ -7,7 +7,9 @@ public class CodingPrograms {
     public static void main(String[] args) {
 
 //        Find First non-repeating character in a string
-        StringCodingPrograms.findNonRepeatingCharacter(str);
+        StringCodingPrograms.findFirstNonRepeatingCharacter(str);
+
+        StringCodingPrograms.isPalindromeString("abcdqdcba");
 
 
 

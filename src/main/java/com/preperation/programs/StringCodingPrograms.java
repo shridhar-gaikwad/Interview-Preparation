@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class StringCodingPrograms {
 
-//    find non repeating character in a string
-    public static void findNonRepeatingCharacter(String str) {
-//        str = str.toLowerCase();      // In case you want to ignore case sensitivity
+//    find first non repeating character in a string
+    public static void findFirstNonRepeatingCharacter(String str) {
+//      str = str.toLowerCase();      // In case you want to ignore case sensitivity
         for(int i=0; i<str.length(); i++){
             char c = str.charAt(i);
             // It will consider uppercase and lowercase letters as different characters
@@ -29,5 +29,15 @@ public class StringCodingPrograms {
                 break;
             }
         }
+    }
+
+    public static void isPalindromeString(String str) {
+        int i=0, j=str.length()-1;
+        boolean status = true;
+        while (i<j){
+            if(str.charAt(i++) != str.charAt(j--)) status = false;
+        }
+        if (status) System.out.println("String is palindrome.");
+        else System.out.println("String is not palindrome.");
     }
 }
