@@ -231,16 +231,20 @@ import org.springframework.stereotype.Service;
  * Q3: What is DI?      -> Dependencies are injected from outside; prefer constructor injection.
  * Q4: What is a Spring Bean? -> An object whose creation, config, DI and lifecycle are
  *                               managed by the Spring IoC container.
- * Q5: BeanFactory vs ApplicationContext?
- *                      -> BeanFactory = lazy, basic. ApplicationContext = eager, enterprise.
- * Q6: @Component vs @Bean? -> @Component on a class (auto-scanned); @Bean on a method for
- *                             third-party/custom objects.
- * Q7: @Controller vs @RestController?
+ * Q5. What is ApplicationContext?
+ *     Container responsible for: Bean creation, Bean lifecycle, Dependency management
+ * Q6: BeanFactory vs ApplicationContext?
+ *     -> BeanFactory = lazy, basic.
+ *      ApplicationContext = eager, enterprise.
+ * Q7: @Component vs @Bean? -> @Component on a class (auto-scanned);
+ *                             @Bean on a method for third-party/custom objects.
+ * Q8: @Controller vs @RestController?
  *                      -> @Controller returns views; @RestController = @Controller +
  *                         @ResponseBody, returns JSON/XML for REST APIs.
- * Q8: @Primary vs @Qualifier? -> @Primary is the default match; @Qualifier picks explicitly.
- * Q9: How to handle exceptions globally? -> @RestControllerAdvice + @ExceptionHandler.
- * Q10: What are bean scopes? -> singleton (default), prototype, request, session.
+ * Q9: @Primary vs @Qualifier? -> @Primary is the default match when multiple candidates exist;
+ *                                @Qualifier picks explicitly it has higher preference.
+ * Q10: How to handle exceptions globally? -> @RestControllerAdvice + @ExceptionHandler.
+ * Q11: What are bean scopes? -> singleton (default), prototype, request, session.
  *
  * ONE-LINER SUMMARY:
  * Spring is an IoC/DI-driven framework: the container creates and wires beans for you,
