@@ -158,6 +158,9 @@ import java.util.TreeSet;
  *     same hashCode so HashMap/HashSet locate them correctly.
  * Q11: Can we access values by index from Set/Queue? -> No, they don't support indexing
  *     (set.get(0) won't compile); use an iterator / poll().
+ * Q12: What is the role of hashCode() in Java collections?
+ *      The primary use of hashcodes is in the management of hash-based collections, such as HashMap, HashSet, and Hashtable.
+ *      These collections use hashcode to efficiently organize & access objects based on their content rather than memory address.
  *
  * ONE-LINER SUMMARY:
  * JCF = Iterable -> Collection (List/Set/Queue) + separate Map hierarchy: pick the
