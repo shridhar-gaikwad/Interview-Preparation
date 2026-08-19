@@ -327,4 +327,12 @@ public class MicroserviceArchitecture {
  * deployable and scalable, wired together by an API gateway, service discovery, async
  * messaging and resilience tooling - trading simplicity for scalability and isolation.
  * =====================================================================================
+ *
+ * Q) How would you handle error in microservices
+ * I handle errors in microservices using timeouts, retries with exponential backoff and jitter, circuit breakers, bulkheads,
+ * and graceful degradation. I distinguish between business errors, client errors, and transient infrastructure failures,
+ * and only retry transient and idempotent operations. For asynchronous operations, I use messaging with retries
+ * and dead-letter queues. I also use centralized structured logging, metrics, and distributed tracing with correlation IDs
+ * so failures can be diagnosed across services. Finally, I return consistent error responses to clients without exposing
+ * internal implementation details
  */
