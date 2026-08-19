@@ -238,13 +238,10 @@ import org.springframework.stereotype.Service;
  *      ApplicationContext = eager, enterprise.
  * Q7: @Component vs @Bean? -> @Component on a class (auto-scanned);
  *                             @Bean on a method for third-party/custom objects.
- * Q8: @Controller vs @RestController?
- *                      -> @Controller returns views; @RestController = @Controller +
- *                         @ResponseBody, returns JSON/XML for REST APIs.
- * Q9: @Primary vs @Qualifier? -> @Primary is the default match when multiple candidates exist;
+ * Q8: @Primary vs @Qualifier? -> @Primary is the default match when multiple candidates exist;
  *                                @Qualifier picks explicitly it has higher preference.
- * Q10: How to handle exceptions globally? -> @RestControllerAdvice + @ExceptionHandler.
- * Q11: What are bean scopes? -> singleton (default), prototype, request, session.
+ * Q9: How to handle exceptions globally? -> @RestControllerAdvice + @ExceptionHandler.
+ * Q10: What are bean scopes? -> singleton (default), prototype, request, session.
  *
  * ONE-LINER SUMMARY:
  * Spring is an IoC/DI-driven framework: the container creates and wires beans for you,

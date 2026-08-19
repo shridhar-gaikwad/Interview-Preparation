@@ -142,6 +142,10 @@ import org.springframework.stereotype.Service;
  * Q6: What is CommandLineRunner? -> A hook that runs code once right after startup.
  * Q7: Spring vs Spring Boot? -> Spring = manual config + external server; Spring Boot =
  *     auto config + embedded server + starters + faster development.
+ * Q8: @Controller vs @RestController?
+ *                      -> @Controller returns views;
+ *                         @RestController = @Controller + @ResponseBody, returns JSON/XML for REST APIs.
+ *
  *
  * ONE-LINER SUMMARY:
  * Spring Boot = Spring + auto configuration + starters + embedded server, so you can
