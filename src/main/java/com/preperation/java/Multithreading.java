@@ -147,6 +147,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  *     normal method call (no new thread).
  * Q3: Does sleep() release the lock? -> No; the thread keeps the monitor while sleeping.
  * Q4: Why prefer synchronized block? -> Locks only the critical section -> better perf.
+ * Q: What is an Intrinsic Lock (Monitor)?
+ *     Every Java object has an internal lock called a monitor.
+ *     synchronized(this) { // critical section }
+ *     Only one thread can hold the lock at a time.
  * Q5: Intrinsic monitor vs Lock? -> synchronized: auto release, no tryLock/fairness;
  *     ReentrantLock (java.util.concurrent.locks): manual release, tryLock, fairness,
  *     interruptible, multiple conditions.
@@ -170,7 +174,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  *      supports manual completion + callbacks.
  * Q17: thenApply vs thenCompose? -> thenApply maps to a plain value; thenCompose flat-maps
  *     when the function itself returns a CompletableFuture (avoids nested futures).
- *
+ * Q: What is the difference between synchronized collection and ConcurrentHashMap?
+ *      Collections.synchronizedMap(map);    \\ Entire map is locked.
+ *      ConcurrentHashMap                \\ Fine-grained bucket level locking.
  * ONE-LINER SUMMARY:
  * Multithreading runs tasks concurrently over shared memory;
  * correctness needs synchronization (locks/volatile/atomics/wait-notify), and the Executor framework +
