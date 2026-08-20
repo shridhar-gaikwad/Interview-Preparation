@@ -66,7 +66,7 @@ import java.lang.ref.WeakReference;
  * -------------------------------------------------------------------------------------
  * JDK vs JRE vs JVM
  * -------------------------------------------------------------------------------------
- *   JVM = executes bytecode (loads classes, runs bytecode, memory mgmt, GC).
+ *   JVM = executes bytecode (loads classes, runs bytecode, memory mgmt, Garbage Collection).
  *   JRE = JVM + libraries  (to RUN Java apps).
  *   JDK = JRE + dev tools  (to DEVELOP Java apps, e.g. javac).
  *      JDK -> JRE -> JVM  (each contains the next).
@@ -104,8 +104,33 @@ import java.lang.ref.WeakReference;
  * Q1: Why is String immutable? -> Security Strings are widely used for sensitive information like: Usernames, Passwords,
  *     Database URLs, File paths, Network connections), thread safety (Immutable objects are naturally thread-safe),
  *     String pool optimization (to save memory), reliable HashMap keys.
+ * Q: What happens when concatenating Strings using + ?
+ *    Compiler internally uses StringBuilder. => new StringBuilder().append("Hello").append("Java").toString();
+ * Q: Why is String concatenation inside loops bad?
+ *    Because every concatenation creates a new String object.
+ * Q: What is capacity in StringBuilder?
+ *     Default capacity = 16
+ *     Formula : (newCapacity = currentCapacity * 2 + 2)
+ * Q: Length() vs capacity() in string.
+ *      Length = Used Characters
+        Capacity = Allocated Space
+ * Q: What is mutable and immutable?
+ *    Immutable : Cannot change after creation.
+ *    Mutable : Can change after creation.
+ *
+ * Q: What is a Garbage Collector?
+ *     Garbage Collector is a JVM component responsible for:
+ *     Identifying unreachable objects, Reclaiming memory occupied by them, Managing heap efficiently
+ * Q: What does "eligible for Garbage Collection" mean?
+ *      An object becomes eligible for GC when it is no longer reachable from any live thread or reference.
+ * What are strong references?
+ *      Default references in Java. As long as reference exists, GC cannot remove the object.
  * Q2: How does GC find garbage? -> Reachability analysis: if reachable from a thread, static var or local var it's LIVE,
  *     otherwise it's garbage.
+ * Q: What are the ways to make an object eligible for GC?
+ *      1. Nullifying reference : obj = null;
+        2. Reassigning reference : obj1 = obj2;
+        3. Anonymous objects : new Employee();
  * Q3: finalize()? -> Object method called by GC before removal; Was used to close files / DB connections.
                     deprecated since Java 9 (unpredictable).
  * Q4: System.gc()? -> Only REQUESTS a GC; JVM may ignore it.
@@ -117,7 +142,11 @@ import java.lang.ref.WeakReference;
  * Q8: Heap vs Stack? -> Heap: objects, shared, large, GC, slower.
  *                      Stack: locals, per-thread, small, no GC, faster.
  * Q9: Metaspace? -> Stores class & method metadata (replaced PermGen in Java 8).
- *
+ * Q: How do you investigate memory issues in production?
+ *      1. Monitor heap usage : JConsole, VisualVM, JMC (Java Mission Control)
+ *      2. Capture Heap Dump : jmap -dump
+ *      3. Analyze Heap Dump : Eclipse MAT, VisualVM, JProfiler
+ *      4. Check GC Logs : -Xlog:gc*
  * ONE-LINER SUMMARY:
  * The JVM loads/links/initializes classes, runs bytecode, and auto-manages heap memory.
  * via GC (Young/Old generations, G1 by default); Strings are immutable while
