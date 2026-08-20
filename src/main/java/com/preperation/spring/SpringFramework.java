@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
  *   - Spring Core        (IoC container, beans)
  *   - Spring Context     (ApplicationContext, events, i18n)
  *   - Spring Beans       (bean definition & wiring)
- *   - Spring AOP         (cross-cutting concerns: logging, security, txns)
+ *   - Spring AOP         (cross-cutting concerns: logging, security, txns, Auditing, Exception Handling, Monitoring)
  *   - Spring JDBC        (JDBC abstraction)
  *   - Spring ORM         (Hibernate/JPA integration)
  *   - Spring MVC         (web layer)
@@ -48,7 +48,7 @@ import org.springframework.stereotype.Service;
  * -------------------------------------------------------------------------------------
  * IoC (Inversion of Control):
  *   A design principle where the responsibility of CREATING and MANAGING objects is
- *   transferred FROM the application code TO the Spring Container.
+ *   transferred FROM the application code To the Spring Container.
  *
  * Dependency Injection (DI):
  *   Providing a dependency from OUTSIDE instead of creating it inside the class.
