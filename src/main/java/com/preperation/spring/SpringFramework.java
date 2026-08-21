@@ -229,10 +229,23 @@ import org.springframework.stereotype.Service;
  * Q1: What is Spring?  -> Lightweight framework providing IoC, DI, AOP, MVC, security, etc.
  * Q2: What is IoC?     -> Container (not your code) creates and manages object lifecycle.
  * Q3: What is DI?      -> Dependencies are injected from outside; prefer constructor injection.
+ * Q: Difference Between IoC and DI?
+ *      IoC : concept
+ *      DI : Implementation of IoC
  * Q4: What is a Spring Bean? -> An object whose creation, config, DI and lifecycle are
  *                               managed by the Spring IoC container.
+ * Q: What are different Bean Scopes?
+ *      singleton:  One Bean Instance
+        prototype:  New Instance Every Request
+        request:
+        session
+        application
+        websocket
+ * Q: What is Auto Configuration?
+ *      Add: spring-boot-starter-web
+ *      Boot automatically configures: DispatcherServlet, Jackson, Tomcat
  * Q5. What is ApplicationContext?
- *     Container responsible for: Bean creation, Bean lifecycle, Dependency management
+ *     Container responsible for: Bean creation, Bean lifecycle, Dependency Injection
  * Q6: BeanFactory vs ApplicationContext?
  *     -> BeanFactory = lazy, basic.
  *      ApplicationContext = eager, enterprise.

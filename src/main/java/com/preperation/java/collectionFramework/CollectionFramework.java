@@ -161,7 +161,9 @@ import java.util.TreeSet;
  * Q12: What is the role of hashCode() in Java collections?
  *      The primary use of hashcodes is in the management of hash-based collections, such as HashMap, HashSet, and Hashtable.
  *      These collections use hashcode to efficiently organize & access objects based on their content rather than memory address.
- *
+ * Q: Difference Between HashSet and LinkedHashSet?
+ *      HashSet: No insertion order
+ *      LinkedHashSet: Maintains insertion order
  * ONE-LINER SUMMARY:
  * JCF = Iterable -> Collection (List/Set/Queue) + separate Map hierarchy: pick the
  * structure by your needs (order, uniqueness, key-value, processing order), and remember
