@@ -1,0 +1,355 @@
+Finastra L1 interview
+
+Q: You promoted your code to DEV and tested it successfully. Then you promoted the same code to QA/UT and it also worked. But after deploying to PROD, 
+the application is failing and CPU usage jumps to critical. What will you do?
+	First, I would treat this as a production incident and focus on stabilizing PROD before doing detailed debugging.
+		1. Check the impact and severity
+			Confirm whether the entire application is affected or only specific APIs.
+			Check error rate, response time, traffic, CPU, memory, GC, thread count, and database connections.
+			Check application and infrastructure monitoring dashboards.
+		
+		2. Compare PROD with DEV/QA
+			Since the same code worked in DEV and QA, I would not immediately assume the code is correct. I would compare the environments:
+				Java/JVM version and JVM parameters
+				Application configuration and environment variables
+				Database version, schema, indexes, and data volume
+				External service dependencies
+				Traffic/load pattern
+				Container/VM CPU and memory limits
+				
+		3. Identify what is consuming CPU
+			I would check application metrics and take a thread dump during the high-CPU period. 
+			If necessary, I would use tools such as top, jstack, JFR, or APM to identify the threads/methods consuming CPU.
+			Excessive iteration because PROD has much larger data
+			Excessive logging
+			Thread contention or thread-pool issues
+		
+		4. Check recent changes
+			I would check the deployment details and recent commits/configuration changes. I would correlate the CPU spike and application failures with the deployment timestamp.
+
+		5. Mitigate first
+			If the application is severely impacting users, I would follow the rollback strategy and roll back to the last known stable version, 
+			or disable the problematic feature using a feature flag if available. After rollback, I would verify that CPU and error rates return to normal.
+		
+		6. Root-cause analysis
+			Once PROD is stable, I would reproduce the issue using production-like data and load in a lower environment. I would identify why QA didn't catch it and 
+			add appropriate test coverage, performance testing, monitoring, or configuration validation.
+			Finally, I would deploy the fix through the normal CI/CD process and monitor PROD closely after deployment.
+
+			So my priority would be: 
+				stabilize PROD → identify the bottleneck → rollback/mitigate if required → find root cause → fix → test with production-like conditions → redeploy and monitor.”
+	
+Q: Interanal working of HashMap
+	1. map.put(key, value)
+	2. compute key.hashCode(), then spread bits (hashing function)
+	3. bucketIndex = (capacity - 1) & hash
+	4. bucket empty     -> store new Node(key, value)
+	5. bucket not empty -> compare hash; if hash matches, use equals() to check key
+	   - equals() true  -> UPDATE existing value
+	   - equals() false -> add node to bucket (COLLISION handling)
+	6. bucket length >= 8 AND table capacity >= 64 -> convert LinkedList to Red-Black
+	 Tree (TREEIFICATION) -> lookup improves O(n)  -> O(log n)
+	7. size > capacity * loadFactor (default 0.75) -> RESIZE (capacity doubles) +
+	 REHASH (recompute bucket positions)
+
+Q: Find frequency of each word from list : List<String> list = Arrays.asList("Java", "Spring Boot", "Microservices", "java", "Json", "Java");		// count
+		Map<String, Long> frequencyMap = list.stream()
+				.collect(Collectors.groupingBy(
+						Function.identity(),		\\ Function.identity() means: word -> word
+						Collectors.counting()		\\ counts how many times each key occurs.
+				));
+		System.out.println(frequencyMap);
+
+	Q)Sort Map by frequency of word. (ASC order)
+		Map<String, Long> sortedMap = frequencyMap.entrySet()		// from previous above solution
+			.stream()
+			.sorted(Map.Entry.comparingByValue())
+			.collect(Collectors.toMap(
+					Map.Entry::getKey,
+					Map.Entry::getValue,
+					(a, b) -> a,
+					LinkedHashMap::new
+			));
+			
+	Q) What if list is final can we add element in it ?
+		final reference	: final means you cannot reassign the reference
+		final List<String> list = Arrays.asList("Java", "Spring", "Boot");		
+		list = new ArrayList<>(); // ❌ Compilation error but allows to add in list
+		
+		But Arrays.asList() 		// returns fixed-size list so cannot add or remove
+		list.add("Microservices"); // ❌ UnsupportedOperationException
+		
+	Q) How does groupingBy() works internally ? 
+		Conceptually, groupingBy() does something like:
+			Map<String, List<String>> map = new HashMap<>();
+
+			for (String word : list) {
+				map.computeIfAbsent(word, k -> new ArrayList<>())
+				   .add(word);
+			}
+	Q) Does it maintain insertion order ? 
+		By default: No.
+		If you want sorted keys, use something such as:	TreeMap::new
+			Map<String, Long> result = list.stream()
+			.collect(Collectors.groupingBy(
+					Function.identity(),
+					TreeMap::new,				\\Now the keys are sorted according to their natural ordering, Alternatively can use HashMap, LinkedHashMap
+					Collectors.counting()
+			));
+			
+	Q) What happens it list contains null string ?
+		Collectors.groupingBy() does not accept a null classification key in the standard JDK implementation; it performs a null-key check and throws: NullPointerException
+		Collectors.groupingBy(Function.identity())	\\ So with a null element it will fail.
+		
+		groupingBy() doesn't allow a null classification key, so a null element causes NullPointerException. Either filter nulls or map null to a placeholder before grouping.”
+		
+	Q) How can we handle null?
+		Map<String, Long> result = list.stream()
+			.filter(Objects::nonNull)
+			.collect(Collectors.groupingBy(
+					Function.identity(),
+					Collectors.counting()
+			));
+		====== OR ========
+		Map<String, Long> result = list.stream()
+        .map(word -> word == null ? "NULL" : word)
+        .collect(Collectors.groupingBy(
+                Function.identity(),
+                Collectors.counting()
+        ));
+		
+	Q) What is toMap() ?
+		Collectors.toMap() is another collector used to convert a Stream into a Map.
+		List<String> names = Arrays.asList("Java", "Spring", "Python");
+
+		Map<String, Integer> map = names.stream()					// Collectors.toMap(keyMapper, valueMapper)
+									.collect(Collectors.toMap(
+											Function.identity(),
+											String::length
+									));
+		// {Java=4, Spring=6, Python=6}
+		* toMap() sometimes require a merge function. toMap() doesn't know what to do with duplicate keys, so it throws: IllegalStateException
+			Map<String, Integer> map = list.stream()
+					.collect(Collectors.toMap(
+							Function.identity(),
+							String::length,
+							(oldValue, newValue) -> oldValue
+					));
+					
+	Q) groupingBy() vs toMap()
+		groupingBy() : Use when multiple elements belong to the same key and you want to group/aggregate them.
+		toMap() : Use when you're explicitly constructing a key → value mapping.
+		“groupingBy() is generally preferable when I want to group multiple elements by a key and perform downstream aggregation like counting, summing, or collecting. 
+		toMap() is useful when I have a direct key-value mapping, but I need to explicitly handle duplicate keys using a merge function.”
+		
+Q: When should we use Java Streams ?
+	Streams are a good fit for:
+		Filtering data
+		Mapping/transformation
+		Grouping
+		Aggregation — count, sum, max, etc.
+		Removing duplicates
+		Complex collection processing
+		Pipelines where operations naturally compose
+		Ex:
+			List<String> result = users.stream()
+			.filter(User::isActive)
+			.map(User::getName)
+			.sorted()
+			.toList();
+	
+	Q) What about using streams for millions of records ? 
+		If the database contains millions of records, the bigger problem may be that you're loading millions of objects into JVM memory in the first place.
+			High heap usage
+			OutOfMemoryError: Java heap space
+			Long GC pauses
+			High CPU due to object creation/processing
+			Increased response time
+		
+	Q) What are problem / errors with parallel streams ? Is it thread safe ?
+		1. Common ForkJoinPool
+			By default, parallel streams use the common ForkJoinPool.
+			That means your application may unintentionally use shared threads for parallel work.
+			This can become problematic in a backend application if multiple requests trigger expensive parallel streams.
+			
+		4. Ordering considerations
+			Parallel processing doesn't necessarily preserve processing order.
+			
+		“Stream itself isn't something I would describe as thread-safe or non-thread-safe like a collection. A sequential Stream processes elements sequentially. 
+		A parallel Stream may process elements concurrently. The key issue is whether the operations and shared state used in the pipeline are safe for concurrent execution.”
+		
+Q: Difference between HashMap and Hashtable. 
+	Feature						HashMap							Hashtable
+	----------------------------------------------------------------------------------------------------
+	Thread-safe					❌ No							✅ Yes
+	Synchronization				No synchronization				Most public methods synchronized
+	Performance					Generally faster in 			Generally slower due to synchronization
+								single-threaded use
+	Null key					✅ One null key					❌ Not allowed
+	Null values					✅ Multiple null values			❌ Not allowed
+	Introduced					Java 1.2						Legacy, Java 1.0
+	Recommended for new code?	✅ Yes, when thread safety 		❌ Generally no
+								isn't needed
+	Modern concurrent 			—								ConcurrentHashMap
+	alternative
+	
+	q) Why is ConcurrentHashMap faster than Hashtable ?
+		ConcurrentHashMap uses segments while Hashtable locks the entire map.
+		ConcurrentHashMap is designed for high concurrency.	It doesn't synchronize the entire map for normal operations.
+	
+Q: When is lock release in ConcurrentHashMap ?
+		In ConcurrentHashMap, the lock used for an update operation is released after the modification of the relevant bucket/bin is completed. 
+		The lock is held only for the critical section, not for the entire map.
+		In modern Java implementations, ConcurrentHashMap uses CAS (Compare-And-Swap) for some operations and synchronization on a particular bin/node when necessary. 
+		So, unlike Hashtable, it doesn't use one global lock for the whole map.
+
+		For example, during put():
+			It first tries to update the bin using CAS when possible.
+			If the bin already contains nodes and needs synchronization, it locks the relevant bin.
+			It performs the insertion/update.
+			Once that operation on the bin is complete, the lock is released.
+
+Q: When is data released / removed from a HashMap ?
+		Data is removed from a HashMap when we explicitly remove the entry using methods like remove(), clear(), or when we replace/update the value associated with a key.
+
+Q: What happens when one service class autowires another service class and they depend on each other ? If i will use @Lasy initialization for circular dependencies ?
+		With constructor injection, Spring detects the circular dependency while creating the beans and normally fails during application startup 
+		with a BeanCurrentlyInCreationException / circular-dependency-related startup failure.
+		Spring cannot create OrderService without PaymentService, but cannot create PaymentService without OrderService.
+		OrderService → PaymentService → OrderService			// This creates a circular dependency
+	
+	Q) If we will use @Lasy initialization for circular dependencies ?
+		Yes, @Lazy can break the bean-creation cycle in some cases, but it should generally be treated as a workaround rather than the preferred design.
+		@Lazy is useful when the circular dependency is intentional or difficult to eliminate.
+		Here, Spring doesn't need to fully create PaymentService immediately while creating OrderService. Instead, Spring injects a lazy proxy, 
+		and the actual PaymentService bean is created when it is first needed.
+		So conceptually:
+			Create OrderService
+				  ↓
+			Need PaymentService
+				  ↓
+			@Lazy → inject proxy
+				  ↓
+			OrderService created
+				  ↓
+			PaymentService can now be created
+	
+	Q) What is the best solution?
+		Usually, a circular dependency indicates that responsibilities are too tightly coupled.
+		introduce another component that coordinates the workflow:
+		        OrderPaymentService
+				  /          \
+				 ↓            ↓
+		 OrderService    PaymentService
+
+
+Q: Order Management System with :
+	Payment Service
+	Inventory Service
+	Notification Service
+	
+	What happens if payment succeeds but inventory is not maintained ?
+		This is a distributed transaction / consistency problem.
+		1. Don't use a single DB transaction across all services
+			I would not try to solve this using one @Transactional transaction across Payment, Inventory, and Order because each microservice typically owns its own database.
+		
+		Instead, I would use a Saga pattern.
+		2. Saga pattern
+			A Saga breaks the business transaction into multiple local transactions.
+			Each service commits its own local transaction.
+			If something fails, we execute a compensating transaction.
+		
+		3.Reserve inventory before charging the customer.
+			That reduces the chance of having to refund a successful payment.
+			
+		This is why I prefer Inventory → Payment rather than Payment → Inventory.
+		
+	Q) How do we maintain consistency ?
+		By keeping compensating action for each failed transaction.
+	
+Q: Working of @Transactional annotation and will it work for consistency across multiple microservices ?
+	@Transactional is provided by Spring's transaction management.
+	
+	What happens internally? : 	OrderService -> Spring Proxy -> beginTransaction() -> @Transactional createOrder() -> commitTransaction() -> Successful ? COMMIT  ORElse  ROLLBACK
+	
+	@Transactional tells Spring to execute a method within a database transaction. Spring uses a proxy/AOP mechanism around the method. 
+	Before the method executes, Spring starts a transaction. If the method completes successfully, Spring commits the transaction. 
+	If a rollback-triggering exception occurs, Spring rolls it back.
+	No, it will not work to maintain consistency across multiple microservices. @Transactional in Order Service cannot automatically roll back transactions 
+	that have already committed in Payment or Inventory services.
+
+Q: Payment succeds, but the user doesn't receive the order response. The user clicks the button multiple times. Will money be debited multiple times ?
+	It can be debited multiple times if the payment API is not designed to be idempotent.
+	In a production payment system, we should prevent this using an idempotency key / unique transaction ID.
+		1. User clicks "Pay"
+				↓
+		2. Generate unique idempotencyKey = ORDER123
+				↓
+		3. Payment Service receives request
+				↓
+		4. Check whether ORDER123 was already processed
+				↓
+		   ┌───────────────┬────────────────┐
+		   │ Not processed │ Already exists │
+		   ↓               ↓
+		Charge customer    Return previous
+		   ↓               result
+		SUCCESS
+		   ↓
+		Store transaction/result
+		   ↓
+		Return response
+		
+		Database should have a unique constraint:	idempotency_key UNIQUE
+		If the same request comes again:			we return the existing transaction instead of charging again.
+	
+Q: What are idempotent methods and how does idempotency method work ?
+		GET, PUT, DELETE are idempotent HTTP method
+		Storing in DB and checking if request is idemp or not is correct way.
+
+Q: How does idempotency work with kafka ?
+		Kafka itself does not automatically make your business operation idempotent. Kafka can deliver a message again, so the consumer must be designed to safely process duplicates.
+			@KafkaListener(topics = "payment-events")
+			@Transactional
+			public void consume(PaymentEvent event) {
+
+				if (processedEventRepository.existsById(event.getEventId())) {
+					return; // duplicate
+				}
+
+				paymentService.process(event);
+
+				processedEventRepository.save(
+					new ProcessedEvent(event.getEventId())
+				);
+			}
+
+Q: In which situation Kafka event can be processed twice ?
+		The most common situation is consumer crash/restart after processing the message but before the Kafka offset is committed.
+		1. Consumer crashes before committing offset
+			Event received → Processed → Crash → Offset not committed
+										  ↓
+								   Event redelivered
+		2. Consumer commits offset after business processing
+		3. Consumer group rebalance
+		4. Consumer processing takes too long
+		
+Q: 2 QA are working on the same application, environment and same database. They dont know the other QA is working and both try to update same data at the same time. what happens ?
+	How we can prevent this race condition ?
+	This is a classic race condition / lost update problem.
+	1. Optimistic locking — usually preferred
+		Add a version column:
+
+		In JPA/Hibernate, this is commonly done with: @Version
+		Hibernate detects the stale version and throws an optimistic-locking exception.
+
+	2. Pessimistic locking
+		The application/database locks the row while one transaction is modifying it.
+		In JPA:
+			@Lock(LockModeType.PESSIMISTIC_WRITE)
+			Optional<Account> findById(Long id);
+
+	# Race condition → Optimistic Locking (@Version) or Pessimistic Locking (FOR UPDATE).
+	
+
+	
