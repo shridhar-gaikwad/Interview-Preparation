@@ -1,4 +1,4 @@
-Finastra L1 interview
+============================================= Finastra L1 interview ==================================================
 
 Q: You promoted your code to DEV and tested it successfully. Then you promoted the same code to QA/UT and it also worked. But after deploying to PROD, 
 the application is failing and CPU usage jumps to critical. What will you do?
@@ -39,26 +39,26 @@ the application is failing and CPU usage jumps to critical. What will you do?
 			So my priority would be: 
 				stabilize PROD → identify the bottleneck → rollback/mitigate if required → find root cause → fix → test with production-like conditions → redeploy and monitor.”
 	
-Q: Interanal working of HashMap
-	1. map.put(key, value)
-	2. compute key.hashCode(), then spread bits (hashing function)
-	3. bucketIndex = (capacity - 1) & hash
-	4. bucket empty     -> store new Node(key, value)
-	5. bucket not empty -> compare hash; if hash matches, use equals() to check key
-	   - equals() true  -> UPDATE existing value
-	   - equals() false -> add node to bucket (COLLISION handling)
-	6. bucket length >= 8 AND table capacity >= 64 -> convert LinkedList to Red-Black
-	 Tree (TREEIFICATION) -> lookup improves O(n)  -> O(log n)
-	7. size > capacity * loadFactor (default 0.75) -> RESIZE (capacity doubles) +
-	 REHASH (recompute bucket positions)
+Q: Internal working of HashMap
+    1. map.put(key, value)
+    2. compute key.hashCode(), then spread bits (hashing function)
+    3. bucketIndex = (capacity - 1) & hash
+    4. bucket empty     -> store new Node(key, value)
+    5. bucket not empty -> compare hash; if hash matches, use equals() to check key
+       - equals() true  -> UPDATE existing value
+       - equals() false -> add node to bucket (COLLISION handling)
+    6. bucket length >= 8 AND table capacity >= 64 -> convert LinkedList to Red-Black
+     Tree (TREEIFICATION) -> lookup improves O(n)  -> O(log n)
+    7. size > capacity * loadFactor (default 0.75) -> RESIZE (capacity doubles) +
+     REHASH (recompute bucket positions)
 
 Q: Find frequency of each word from list : List<String> list = Arrays.asList("Java", "Spring Boot", "Microservices", "java", "Json", "Java");		// count
-		Map<String, Long> frequencyMap = list.stream()
-				.collect(Collectors.groupingBy(
-						Function.identity(),		\\ Function.identity() means: word -> word
-						Collectors.counting()		\\ counts how many times each key occurs.
-				));
-		System.out.println(frequencyMap);
+    Map<String, Long> frequencyMap = list.stream()
+            .collect(Collectors.groupingBy(
+                    Function.identity(),		\\ Function.identity() means: word -> word
+                    Collectors.counting()		\\ counts how many times each key occurs.
+            ));
+    System.out.println(frequencyMap);
 
 	Q)Sort Map by frequency of word. (ASC order)
 		Map<String, Long> sortedMap = frequencyMap.entrySet()		// from previous above solution
