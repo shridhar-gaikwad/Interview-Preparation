@@ -1,16 +1,17 @@
 ============================================= Finastra L1 interview ==================================================
 
-Q: You promoted your code to DEV and tested it successfully. Then you promoted the same code to QA/UT and it also worked. But after deploying to PROD, 
-the application is failing and CPU usage jumps to critical. What will you do?
+Q: You promoted your code to DEV and tested it successfully. Then you promoted the same code to QA/UT and it also worked.
+But after deploying to PROD, the application is failing and CPU usage jumps to critical. What will you do?
 	First, I would treat this as a production incident and focus on stabilizing PROD before doing detailed debugging.
 		1. Check the impact and severity
+
 			Confirm whether the entire application is affected or only specific APIs.
 			Check error rate, response time, traffic, CPU, memory, GC, thread count, and database connections.
 			Check application and infrastructure monitoring dashboards.
 		
 		2. Compare PROD with DEV/QA
-			Since the same code worked in DEV and QA, I would not immediately assume the code is correct. I would compare the environments:
-				Java/JVM version and JVM parameters
+			Since the same code worked in DEV & QA, I would not immediately assume the code is correct. I would compare the environments:
+				Java version and JVM parameters
 				Application configuration and environment variables
 				Database version, schema, indexes, and data volume
 				External service dependencies
@@ -55,7 +56,7 @@ Q: Internal working of HashMap
 Q: Find frequency of each word from list : List<String> list = Arrays.asList("Java", "Spring Boot", "Microservices", "java", "Json", "Java");		// count
     Map<String, Long> frequencyMap = list.stream()
             .collect(Collectors.groupingBy(
-                    Function.identity(),		\\ Function.identity() means: word -> word
+                    Function.identity(),		\\ Function.identity() means: word -> word ("Java" = ["Java", "Java"]) Group each element using the element itself as the key.
                     Collectors.counting()		\\ counts how many times each key occurs.
             ));
     System.out.println(frequencyMap);
