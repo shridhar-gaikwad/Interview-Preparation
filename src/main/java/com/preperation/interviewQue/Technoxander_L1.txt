@@ -1,0 +1,245 @@
+Q) An API works perfectly fine in Dev but has a 10-second delay in Prod. What could be the reason?
+=> I would first identify where the 10 seconds is being spent using application logs, metrics, and distributed tracing.
+    I would then compare Dev and Prod systematically.
+    Database issues :
+        Missing indexes in Prod
+        Larger production data
+        Slow queries or joins
+        Connection pool exhaustion
+    External API / downstream service :
+        Slow response from another microservice
+        Network latency
+        DNS or firewall issues
+        API timeout
+        Retries
+    Connection pool issues :
+        Database connection pool may be exhausted.
+    Thread pool exhaustion / JVM resource issues :
+        Application threads or custom executor threads may be busy.
+        Requests may have to wait in a queue.
+        High CPU or memory usage
+        Frequent or long GC pauses
+    Configuration differences
+        Different timeout values
+        Different connection pool sizes
+        Different JVM settings
+        Different environment variables or Spring profiles
+    Production data volume
+        The same query or algorithm may be fast with Dev data but slow with millions of production records.
+--------------------------------------------------------------------------------------------------------
+Q) API creating a duplicate request. What can be the reason ?
+    Client retry
+        Client may send the same request again due to timeout, network failure, or UI retry.
+    Double-click / multiple submissions
+        User may click the submit button multiple times.
+    API Gateway / Load Balancer retry
+        Gateway or infrastructure may retry the request if it doesn't receive a response within the expected time.
+    Application-level retry
+        Spring Retry, Resilience4j, or custom retry logic may execute the same operation multiple times.
+    Microservice-to-microservice retry
+        One service may call another service, timeout, and retry even though the first request was already processed.
+    Kafka duplicate message
+        Kafka generally provides at-least-once delivery. If the consumer processes a message but fails before committing the offset,
+        the message can be consumed again.
+    Concurrency / Race condition
+        Two requests may arrive simultaneously and both perform the same operation.
+    Missing database constraint
+        If there is no unique constraint on a business key, duplicate records can be inserted.
+    Transaction/response failure
+        Database transaction may succeed, but the response may fail or timeout. The caller then retries the request.
+
+    How to debug
+        Check Correlation ID / Request ID in logs.
+        Check whether the client actually sent the request twice.
+        Check API Gateway and service logs.
+        Check retry configuration.
+        Check Kafka consumer logs and offset commits.
+        Check database records and constraints.
+
+    How to prevent
+        Use Idempotency Key for important POST operations.
+        Add unique constraints in the database.
+        Make Kafka consumers idempotent.
+        Configure retries carefully.
+        Handle concurrent requests properly.
+--------------------------------------------------------------------------------------------------------
+Q) Proper working API now gets 10x traffic. What to do now  or scale ?
+    1) Check the current bottleneck first
+        Monitor CPU, memory, network, response time, error rate, throughput.
+    2) Scale horizontally
+        Add more instances/pods of the Spring Boot application.
+        Put them behind a Load Balancer.
+        Prefer horizontal scaling for stateless microservices.
+    3) Enable auto-scaling
+        Use Kubernetes HPA or cloud auto-scaling.
+        Scale based on CPU, memory, request rate, or custom metrics.
+    4) Check the database
+        Database often becomes the bottleneck before the application.
+        Check connection pool, CPU, locks, slow queries, and indexes.
+    5) Use caching
+       Cache frequently accessed data using Redis or another caching solution.
+       This reduces repeated database calls.
+    6) Scale Kafka if Kafka is involved
+        Increase Kafka topic partitions if more consumer parallelism is required.
+        Increase consumer instances within the limits of partition count.
+--------------------------------------------------------------------------------------------------------
+Q) How would you design scalable design ?
+    1) Keep services stateless
+        Don't maintain user/session state inside a particular application instance.
+        This allows us to add/remove instances easily.
+    2) Horizontal scaling
+        Run multiple instances of the Spring Boot application.
+        Put them behind a Load Balancer.
+    3) Use caching
+        Use Redis for frequently accessed data.
+        This reduces database load and improves response time.
+    4) Database optimization
+        Proper indexes.
+        Optimize slow queries.
+        Connection pooling.
+        Read replicas for read-heavy applications.
+        Partition/shard the database when necessary.
+    5) Asynchronous processing
+        Use Kafka for operations that don't need an immediate response.
+        Example: order creation → publish event → notification service processes it asynchronously.
+    6) Auto-scaling
+        Use Kubernetes HPA/cloud auto-scaling based on CPU, memory, request rate, or custom metrics.
+    7) Rate limiting
+        Protect the system from sudden traffic spikes and abusive clients.
+    8) Fault tolerance
+        Use timeout, retry, circuit breaker and bulkhead patterns.
+        Avoid cascading failures between microservices.
+--------------------------------------------------------------------------------------------------------
+Q) Which caching you works and how it works ?
+    I have worked with Redis / ignite cache.
+    Instead of hitting the database every time:
+            Request
+               ↓
+            Check Redis
+               ↓
+            Cache Hit → Return data
+               ↓
+            Cache Miss
+               ↓
+            Database
+               ↓
+            Store in Redis
+               ↓
+            Return data
+
+    Cache hit
+        Data exists in Redis.
+        Return it directly.
+        Database is not called.
+    Cache miss
+        Data is not available in Redis.
+        Fetch it from DB.
+        Put it into Redis with a TTL.
+        Return the response.
+    TTL
+        We give cached data an expiration time.
+        Example: 5 minutes.
+        After TTL expires, the data is removed/expired.
+    Eviction
+        Redis can evict keys based on configured policies when memory is full.
+    Cache invalidation
+        When underlying data changes, we should consider removing/updating the corresponding cache entry.
+--------------------------------------------------------------------------------------------------------
+Q) How can you implement caching in system (codewise) ?
+    Step 1: Add dependencies
+        For Redis, add spring-boot-starter-data-redis dependency in pom.xml.
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+    Step 2: Configure Redis
+        In application.properties or application.yml, configure Redis host, port, and other settings.
+    Step 3: Enable caching
+        Use @EnableCaching annotation in your Spring Boot application class.
+        @SpringBootApplication
+        @EnableCaching
+        public class ProductApplication {
+
+            public static void main(String[] args) {
+                SpringApplication.run(ProductApplication.class, args);
+            }
+        }
+    Step 4: Use caching annotations
+        Use @Cacheable on methods whose results you want to cache.
+        Example:
+            @Service
+            public class ProductService {
+
+                @Cacheable(value = "products", key = "#id")
+                public Product getProduct(Long id) {
+
+                    System.out.println("Fetching from database");
+
+                    return productRepository.findById(id)
+                            .orElseThrow();
+                }
+            }
+
+    Step 5: Use @CachePut to update the cache when data changes.
+            @CachePut(value = "products", key = "#product.id")
+            public Product updateProduct(Product product) {
+                return productRepository.save(product);
+            }
+
+    Step 6: Use @CacheEvict to remove entries from the cache when data is deleted or updated.
+            @CacheEvict(value = "products", key = "#id")
+            public void deleteProduct(Long id) {
+                productRepository.deleteById(id);
+            }
+
+Q) When do you need synchronous and asynchronous communication in application?
+    Synchronous communication :
+        Use synchronous communication when the caller needs the response immediately before continuing.
+        The order service needs to know:
+            Payment SUCCESS
+                or
+            Payment FAILED
+        So synchronous communication makes sense.
+        Use synchronous when:
+            Immediate response is required.
+            Operation is short-running.
+            Caller cannot continue without the result.
+            Strong request-response interaction is required.
+        Common technologies:
+            REST
+            HTTP
+            gRPC
+
+    Asynchronous communication :
+        Use asynchronous communication when the caller does not need the response immediately and can continue with other tasks.
+            Order Service
+                 |
+                 | Kafka Event
+                 ↓
+               Kafka
+                 |
+                 +------→ Notification Service
+                 |
+                 +------→ Email Service
+                 |
+                 +------→ Analytics Service
+
+        The Order Service doesn't need to wait for:
+            Email
+            SMS
+            Analytics
+            Notification
+        Use asynchronous when:
+            Immediate response is not required.
+            Operation is long-running.
+            Loose coupling is desired.
+            You have high traffic.
+        Common technologies:
+            Kafka
+            RabbitMQ
