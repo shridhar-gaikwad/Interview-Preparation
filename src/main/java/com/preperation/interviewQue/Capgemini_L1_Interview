@@ -1,0 +1,199 @@
+Q) Introduction, Total experience, Project, Tech stack
+
+Q) Difference between @Qualifier and @Primary in Spring Framework
+=> "@Primary and @Qualifier are used when multiple Spring beans of the same type exist. @Primary marks one bean as the default choice,
+    whereas @Qualifier explicitly tells Spring which specific bean should be injected."
+
+Q) How security handling is done in project. Which security framework is used (JWT, OAuth2.0) ?  Working on JWT or OAuth2.0.
+=>  In my project, we use Spring Security with JWT-based authentication. When the user authenticates successfully,
+    the server generates a signed JWT containing relevant claims such as the user identity and authorities.
+    The client sends the JWT with subsequent requests using the Authorization: Bearer <token> header.
+    Spring Security intercepts the request through its security filter chain. The JWT is validated, including its signature
+    and relevant claims such as expiration. If valid, Spring Security establishes the authenticated principal and authorization rules
+    determine whether the user has permission to access the endpoint.
+
+Q) How to secure sensitive data in Spring Boot application (Application.properties). How to encrypt and decrypt sensitive data.
+=>  I avoid storing sensitive credentials such as database passwords, API keys, and secret keys directly in application.properties
+    or application.yml. Instead, I externalize them using environment variables, Docker/Kubernetes secrets,
+    or a dedicated secrets manager such as AWS Secrets Manager or Azure Key Vault.
+    If encryption at rest is required, the secret can be stored encrypted and decrypted by a trusted component at runtime.
+    The encryption key itself should never be stored alongside the encrypted value; it should be managed separately using a
+    secure key-management or secrets system.
+    Application.properties file :
+        spring.datasource.username=${DB_USERNAME}
+        spring.datasource.password=${DB_PASSWORD}
+    Then the deployment environment provides:
+        DB_USERNAME=app_user
+        DB_PASSWORD=********
+
+    Q) Can we Base64 encode the password?"
+        No. Base64 is encoding, not encryption. It provides no confidentiality.
+
+Q) Explain stages in CI/CD (Build, docker push, deploy etc)
+    Our CI/CD pipeline automatically takes code from source control through build, testing, packaging, containerization,
+    image publishing, deployment, and verification.
+
+    Checkout: The pipeline starts by checking out the latest code from the version control system (e.g., Git).
+    Build: The code is compiled, and dependencies are resolved. This may involve running unit tests to ensure code quality.
+    Unit Test: Automated tests are executed to validate the functionality of the application.
+    Package: The application is packaged into a deployable format, such as a JAR.
+    Containerization: The packaged application is built into a Docker image, which includes the application and its runtime environment.
+    Docker Push: The Docker image is pushed to a container registry (e.g., Docker Hub, AWS ECR, or Azure Container Registry) for storage and distribution.
+    Deploy: The Docker image is deployed to the target environment (e.g., staging or production) using orchestration tools like Kubernetes or Docker Compose.
+    Verify: Post-deployment, automated tests or health checks are run to ensure the application is functioning correctly in the target environment.
+
+Q) Explain full flow how Rest Api works in your project. How request is coming to controller and how response is going back to client.
+=>  "When a client sends an HTTP request, it first reaches the application's web server and Spring's request-processing
+    infrastructure. Spring MVC's DispatcherServlet acts as the front controller and identifies the appropriate controller method based
+    on the HTTP method and URL mapping.
+    Before the controller executes, the request can pass through security filters and other filters/interceptors.
+    The controller validates the request and delegates business logic to the service layer. The service interacts with repositories
+    or external services as required. The result then travels back through the controller, and Spring serializes the response object,
+    usually to JSON, and sends the HTTP response back to the client."
+
+            Client
+              ↓
+            HTTP Request
+              ↓
+            Load Balancer / API Gateway (if applicable)
+              ↓
+            Application
+              ↓
+            Security Filter Chain
+              ↓
+            DispatcherServlet
+              ↓
+            Controller
+              ↓
+            Service
+              ↓
+            Repository
+              ↓
+            Database
+              ↑
+            Repository
+              ↑
+            Service
+              ↑
+            Controller
+              ↓
+            JSON Serialization
+              ↓
+            HTTP Response
+              ↓
+            Client
+
+Q) Explain Solid Principles with examples.
+    SOLID helps us create code that is maintainable, extensible, testable, and loosely coupled.
+    In Spring applications, Dependency Inversion is especially visible through dependency injection, where services depend on
+    interfaces rather than concrete implementations.
+    S — Single Responsibility Principle
+        A class should have only one reason to change. For example, a UserService class should only handle user-related operations,
+        not email notifications or logging.
+        Ex : OrderService
+             EmailService
+             InvoiceService
+    O — Open/Closed Principle
+        Software entities should be open for extension but closed for modification.
+        For example, if you want to add a new payment method, you can create a new class that implements a PaymentMethod interface
+        instead of modifying existing payment classes.
+    L — Liskov Substitution Principle
+        Subtypes must be substitutable for their base types. The interface should represent behavior that all implementations can actually support.
+        Ex :
+            class Bird {
+                void fly() {}
+            }
+            class Penguin extends Bird {
+                // Penguin cannot fly and  abstraction is wrong here. So, we should not have fly() method in Bird class.
+            }
+    I — Interface Segregation Principle
+        Clients should not be forced to depend on interfaces they do not use. For example, instead of having a single large interface for all types of vehicles, create separate interfaces for Car, Bike, and Truck.
+    D — Dependency Inversion Principle
+        High-level modules should not depend on low-level modules. Both should depend on abstractions. For example, instead of a CustomerService class directly depending on a MySQLDatabase class, it should depend on a Database interface.
+
+Q) Explain difference between application.properties and application.yml in Spring Boot. What if both are present in the project.
+=>  "Both are supported configuration formats in Spring Boot. application.properties uses key-value properties, while application.yml
+    or application.yaml represents configuration in a hierarchical YAML structure.
+    Functionally, they can represent the same configuration; the choice is mainly readability and project preference."
+    Properties file example:
+        server.port=8080
+        spring.datasource.url=jdbc:postgresql://localhost:5432/app
+        spring.datasource.username=admin
+    YAML file example:
+        server:
+          port: 8080
+        spring:
+          datasource:
+            url: jdbc:postgresql://localhost:5432/app
+            username: admin
+
+Q) Can we use both application.properties and application.yml in the same Spring Boot project? If yes, which one will take precedence?
+=>  Spring Boot can have both application.properties and application.yml/application.yaml. Configuration from both can be loaded.
+    If the same property is defined in both, the property with higher precedence wins; when they are in the same application
+    configuration location, application.properties takes precedence over YAML. So generally, we should avoid defining the same
+    configuration in both files to prevent confusion.
+    application.properties overrides application.yml/application.yaml when both define the same property at the same configuration location.
+
+Q) Have 1 HashMap with null key. Put key null and value as "value1". Then put key as null and value as "value2".
+    What will be the final value of the null key in the HashMap?
+=>  HashMap allows one null key. When we put another value using the same null key, it replaces the existing value.
+    Therefore, the final value is value2.
+
+Q) Time complexity of HashMap operations (get, put, remove) in Java.
+=>  "For a HashMap, get, put, and remove are O(1) on average. In the worst case, collisions can degrade performance.
+    In modern Java implementations, heavily collided buckets can be treeified, giving O(log n) lookup within that bucket under
+    the relevant conditions."
+
+Q) What is zookeeper in Kafka? How it is used in Kafka? What is the role of zookeeper in Kafka?
+=> Historically, Kafka used ZooKeeper for cluster metadata and coordination. ZooKeeper managed information such as broker membership,
+    controller election, and cluster metadata. However, modern Kafka supports KRaft mode, where Kafka manages its metadata internally
+    without requiring ZooKeeper. So for a new Kafka deployment, I would first check whether the cluster uses ZooKeeper or KRaft.
+
+Q) What to do when 2 beans / auto-configuration classes cause duplicate bean creation ?
+
+Q) Spring Boot Application takes a long time to start because of heavy bean initialization.
+=>  First, I would identify which beans are causing the startup delay rather than immediately making everything lazy.
+    I would inspect startup metrics/logs and identify expensive initialization such as database connections, external API calls,
+    large cache loading, or expensive object creation. Then I would move non-essential work out of startup,
+    initialize it asynchronously or on demand, and optimize the expensive initialization.
+    What I'd investigate :
+        1. Startup logs
+        2. Bean initialization time
+        3. DB connection initialization
+        4. External API calls
+        5. Large cache loading
+        6. Expensive @PostConstruct logic
+        7. Entity scanning / JPA initialization
+        8. Auto-configurations
+
+    Approach to optimize :
+        1. Use @Lazy for non-essential beans
+        2. Use @ConditionalOnProperty or @ConditionalOnClass to conditionally load beans
+        3. Use @Profile to load beans only in specific environments
+        4. Use asynchronous initialization for heavy beans
+        5. Optimize expensive initialization logic
+        6. Use caching for expensive computations
+        7. Reduce the number of auto-configurations by excluding unnecessary ones
+
+Q) Alternative to @Lazy for heavy bean initialization in Spring Boot.
+    Option 1 — @Lazy
+
+    Option 2 — Async initialization
+        For non-critical work:
+
+    Option 3 — Initialize on demand
+        For example, if a bean is only needed in certain scenarios, we can initialize it only when required.
+        Do not :
+            @PostConstruct
+            loadEverything();
+
+    Option 4 — ApplicationReadyEvent
+        For work that should start after the application is ready:
+        @Component
+        public class CacheInitializer {
+
+            @EventListener(ApplicationReadyEvent.class)
+            public void initialize() {
+                // load cache
+            }
+        }
