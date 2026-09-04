@@ -10,9 +10,8 @@ import java.lang.ref.WeakReference;
  * =====================================================================================
  *
  * >>> NOTE ON THIS FILE <<<
- * The Java below is REAL, runnable code. main() runs one demo per topic so you can SEE
- * each concept from the notes in action (String immutability vs builders, GC eligibility,
- * class loaders, static-init order, throw/throws).
+ * The Java below is REAL, runnable code. main() runs one demo per topic so you can SEE each concept from the notes in
+ * action (String immutability vs builders, GC eligibility, class loaders, static-init order, throw/throws).
  *
  * -------------------------------------------------------------------------------------
  * STRING vs STRINGBUILDER vs STRINGBUFFER

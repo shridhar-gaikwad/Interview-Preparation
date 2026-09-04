@@ -140,12 +140,13 @@ import org.springframework.stereotype.Service;
  * 3) BEAN SCOPES & LIFECYCLE
  * -------------------------------------------------------------------------------------
  * Bean lifecycle:
- *      1. Instantiate bean
- *      2. Inject dependencies
- *      3. @PostConstruct   (init callback)
- *      4. Bean ready (in use)
- *      5. @PreDestroy      (cleanup callback)
- *      6. Destroy bean
+ *      1. Bean Definition
+ *      2. Instantiate bean
+ *      3. Inject dependencies
+ *      4. @PostConstruct   (init callback)
+ *      5. Bean ready (in use)
+ *      6. @PreDestroy      (cleanup callback)
+ *      7. Destroy bean
  *   (ADDITIONAL) Same hooks via interfaces: InitializingBean.afterPropertiesSet()
  *                and DisposableBean.destroy().
  *

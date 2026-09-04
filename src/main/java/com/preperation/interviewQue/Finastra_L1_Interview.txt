@@ -4,7 +4,6 @@ Q: You promoted your code to DEV and tested it successfully. Then you promoted t
 But after deploying to PROD, the application is failing and CPU usage jumps to critical. What will you do?
 	First, I would treat this as a production incident and focus on stabilizing PROD before doing detailed debugging.
 		1. Check the impact and severity
-
 			Confirm whether the entire application is affected or only specific APIs.
 			Check error rate, response time, traffic, CPU, memory, GC, thread count, and database connections.
 			Check application and infrastructure monitoring dashboards.
@@ -53,7 +52,7 @@ Q: Internal working of HashMap
     7. size > capacity * loadFactor (default 0.75) -> RESIZE (capacity doubles) +
      REHASH (recompute bucket positions)
 
-Q: Find frequency of each word from list : List<String> list = Arrays.asList("Java", "Spring Boot", "Microservices", "java", "Json", "Java");		// count
+Q: Find frequency of each word from list : List<String> list = List.of("Java", "Spring Boot", "Microservices", "java", "Json", "Java");		// count
     Map<String, Long> frequencyMap = list.stream()
             .collect(Collectors.groupingBy(
                     Function.identity(),		\\ Function.identity() means: word -> word ("Java" = ["Java", "Java"]) Group each element using the element itself as the key.
@@ -99,10 +98,12 @@ Q: Find frequency of each word from list : List<String> list = Arrays.asList("Ja
 			));
 			
 	Q) What happens it list contains null string ?
-		Collectors.groupingBy() does not accept a null classification key in the standard JDK implementation; it performs a null-key check and throws: NullPointerException
+		Collectors.groupingBy() does not accept a null classification key in the standard JDK implementation;
+		it performs a null-key check and throws: NullPointerException
 		Collectors.groupingBy(Function.identity())	\\ So with a null element it will fail.
 		
-		groupingBy() doesn't allow a null classification key, so a null element causes NullPointerException. Either filter nulls or map null to a placeholder before grouping.”
+		groupingBy() doesn't allow a null classification key, so a null element causes NullPointerException.
+		Either filter nulls or map null to a placeholder before grouping.”
 		
 	Q) How can we handle null?
 		Map<String, Long> result = list.stream()
@@ -213,7 +214,8 @@ Q: When is lock release in ConcurrentHashMap ?
 Q: When is data released / removed from a HashMap ?
 		Data is removed from a HashMap when we explicitly remove the entry using methods like remove(), clear(), or when we replace/update the value associated with a key.
 
-Q: What happens when one service class autowires another service class and they depend on each other ? If i will use @Lasy initialization for circular dependencies ?
+Q: What happens when one service class autowires another service class and they depend on each other ?
+    If i will use @Lasy initialization for circular dependencies ?
 		With constructor injection, Spring detects the circular dependency while creating the beans and normally fails during application startup 
 		with a BeanCurrentlyInCreationException / circular-dependency-related startup failure.
 		Spring cannot create OrderService without PaymentService, but cannot create PaymentService without OrderService.
@@ -252,7 +254,8 @@ Q: Order Management System with :
 	What happens if payment succeeds but inventory is not maintained ?
 		This is a distributed transaction / consistency problem.
 		1. Don't use a single DB transaction across all services
-			I would not try to solve this using one @Transactional transaction across Payment, Inventory, and Order because each microservice typically owns its own database.
+			I would not try to solve this using one @Transactional transaction across Payment, Inventory, and Order
+			because each microservice typically owns its own database.
 		
 		Instead, I would use a Saga pattern.
 		2. Saga pattern
@@ -276,8 +279,8 @@ Q: Working of @Transactional annotation and will it work for consistency across 
 	@Transactional tells Spring to execute a method within a database transaction. Spring uses a proxy/AOP mechanism around the method. 
 	Before the method executes, Spring starts a transaction. If the method completes successfully, Spring commits the transaction. 
 	If a rollback-triggering exception occurs, Spring rolls it back.
-	No, it will not work to maintain consistency across multiple microservices. @Transactional in Order Service cannot automatically roll back transactions 
-	that have already committed in Payment or Inventory services.
+	No, it will not work to maintain consistency across multiple microservices. @Transactional in Order Service cannot automatically
+	roll back transactions that have already committed in Payment or Inventory services.
 
 Q: Payment succeds, but the user doesn't receive the order response. The user clicks the button multiple times. Will money be debited multiple times ?
 	It can be debited multiple times if the payment API is not designed to be idempotent.
@@ -309,7 +312,8 @@ Q: What are idempotent methods and how does idempotency method work ?
 		Storing in DB and checking if request is idemp or not is correct way.
 
 Q: How does idempotency work with kafka ?
-		Kafka itself does not automatically make your business operation idempotent. Kafka can deliver a message again, so the consumer must be designed to safely process duplicates.
+		Kafka itself does not automatically make your business operation idempotent. Kafka can deliver a message again,
+		so the consumer must be designed to safely process duplicates.
 			@KafkaListener(topics = "payment-events")
 			@Transactional
 			public void consume(PaymentEvent event) {
@@ -340,9 +344,8 @@ Q: 2 QA are working on the same application, environment and same database. They
 	This is a classic race condition / lost update problem.
 	1. Optimistic locking — usually preferred
 		Add a version column:
-
-		In JPA/Hibernate, this is commonly done with: @Version
-		Hibernate detects the stale version and throws an optimistic-locking exception.
+            In JPA/Hibernate, this is commonly done with: @Version
+            Hibernate detects the stale version and throws an optimistic-locking exception.
 
 	2. Pessimistic locking
 		The application/database locks the row while one transaction is modifying it.

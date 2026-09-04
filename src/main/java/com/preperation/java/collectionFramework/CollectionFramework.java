@@ -164,6 +164,12 @@ import java.util.TreeSet;
  * Q: Difference Between HashSet and LinkedHashSet?
  *      HashSet: No insertion order
  *      LinkedHashSet: Maintains insertion order
+ * Q: HashMap vs Hashtable?
+ *      "HashMap is the modern general-purpose map implementation and is not synchronized,
+ *      whereas Hashtable is a legacy synchronized collection. HashMap allows one null key and multiple null values,
+ *      whereas Hashtable doesn't allow null keys or null values. In modern concurrent applications,
+ *      ConcurrentHashMap is generally preferred over Hashtable."
+ *
  * ONE-LINER SUMMARY:
  * JCF = Iterable -> Collection (List/Set/Queue) + separate Map hierarchy: pick the
  * structure by your needs (order, uniqueness, key-value, processing order), and remember

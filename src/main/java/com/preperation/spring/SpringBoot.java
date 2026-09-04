@@ -146,6 +146,11 @@ import org.springframework.stereotype.Service;
  *                      -> @Controller returns views;
  *                         @RestController = @Controller + @ResponseBody, returns JSON/XML for REST APIs.
  *
+ * Q9: How do you implement centralized exception handling?
+ * "I implement centralized exception handling using @RestControllerAdvice and @ExceptionHandler.
+ * Instead of handling exceptions in every controller, I define exception-handling methods in one global handler class.
+ * When an exception occurs in a controller, Spring finds the matching @ExceptionHandler method and returns a consistent error response."
+ *      Controller   ->  Service   ->  Exception thrown    ->  @RestControllerAdvice   ->  @ExceptionHandler   ->  HTTP Response
  *
  * ONE-LINER SUMMARY:
  * Spring Boot = Spring + auto configuration + starters + embedded server, so you can

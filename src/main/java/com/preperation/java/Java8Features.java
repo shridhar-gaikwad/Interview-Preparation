@@ -77,6 +77,9 @@ import java.util.stream.Stream;
  *
  * -------------------------------------------------------------------------------------
  * 5) OPTIONAL  (avoid NullPointerException)
+ * Optional<T> is a container object introduced in Java 8 that may or may not contain a non-null value.
+ * It is mainly used to represent the absence of a value explicitly and helps reduce accidental NullPointerExceptions,
+ * especially when dealing with method return values."
  * -------------------------------------------------------------------------------------
  *      Optional.of(value)          // value must be non-null
  *      Optional.ofNullable(value)  // value may be null
@@ -96,10 +99,33 @@ import java.util.stream.Stream;
  * Q5: Lazy evaluation? -> Intermediate ops run only when a terminal op is invoked.
  * Q6: Why are streams better than loops? -> Cleaner, functional, parallelizable, less
  *     boilerplate.
- * Q7: Can a stream be reused? -> No; it's single-use. After a terminal op it's consumed;
- *     reuse throws IllegalStateException ("stream has already been operated upon").
+ * Q7: Can a stream be reused? -> No. A Java Stream cannot be reused after a terminal operation has been performed.
+ *                              Once a terminal operation consumes the stream, the stream is considered closed.
+ *                              If we try to use it again, Java throws IllegalStateException.
+ *                              Create a new stream from the original source if want to process the data again.
+ *
  * Q8: Why only one abstract method in a functional interface? -> So the lambda has an
  *     unambiguous target method to implement.
+ * Q9: What is reduce()? -> A terminal operation that aggregates stream elements into a single result.
+ * Q10: findFirst() vs findAny() -> findFirst() returns the first element in encounter order;
+ *                                   findAny() may return any element (useful for parallel streams).
+ *
+ * Q11: forEach() vs forEachOrdered(). -> forEach() may process elements in any order (parallel streams);
+ *                                        forEachOrdered() processes elements in encounter order.
+ *
+ * Q12: sequentially vs parallel streams? -> sequential streams process elements one at a time;
+ *                                          parallel streams divide the workload across multiple threads for faster processing.
+ *
+ * Q13: When should you not use Parallel Streams? -> such as for small datasets or when maintaining strict ordering is important.
+ *
+ * Q14: What is use of @FunctionalInterface annotation -> "@FunctionalInterface is an annotation used to indicate that an
+ *                              interface is intended to be a functional interface, meaning it must have exactly one abstract method.
+ *                              It allows the interface to be used with lambda expressions and method references."
+ *
+ * Q15: What is the difference between orElse() and orElseGet() in Java Optional?
+ *      "Both provide a default value when an Optional is empty. The key difference is that orElse() evaluates its argument immediately,
+ *      even when the Optional already contains a value, whereas orElseGet() uses a Supplier and evaluates the default value lazily,
+ *      only when the Optional is empty."
  *
  * ONE-LINER SUMMARY:
  * Java 8 brought functional programming to Java: lambdas + functional interfaces power a
