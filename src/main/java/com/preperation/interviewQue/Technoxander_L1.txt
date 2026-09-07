@@ -28,8 +28,6 @@ Q) An API works perfectly fine in Dev but has a 10-second delay in Prod. What co
         The same query or algorithm may be fast with Dev data but slow with millions of production records.
 --------------------------------------------------------------------------------------------------------
 Q) API creating a duplicate request. What can be the reason ?
-    Client retry
-        Client may send the same request again due to timeout, network failure, or UI retry.
     Double-click / multiple submissions
         User may click the submit button multiple times.
     API Gateway / Load Balancer retry
