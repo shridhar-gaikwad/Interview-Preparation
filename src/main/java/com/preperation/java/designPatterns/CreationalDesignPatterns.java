@@ -135,7 +135,7 @@ package com.preperation.java.designPatterns;
  * EXAMPLE BELOW: each demo* method maps to a pattern in the notes above.
  * =====================================================================================
  */
-public class DesignPatterns {
+public class CreationalDesignPatterns {
 
     public static void main(String[] args) {
         demoSingleton();
