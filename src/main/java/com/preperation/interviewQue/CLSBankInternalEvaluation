@@ -1,0 +1,467 @@
+Q: What are SOLID principles?
+	SOLID is a set of five object-oriented design principles that help us write code that is maintainable, flexible, testable, and loosely coupled.
+	1. S — Single Responsibility Principle
+		A class should have one reason to change.
+		Instead of :
+			class OrderService {
+				void createOrder() {}
+				void sendEmail() {}
+				void generateInvoice() {}
+			}
+		Better :
+			OrderService
+			EmailService
+			InvoiceService
+
+	2. O — Open/Closed Principle
+		A class should be open for extension but closed for modification.
+		For example, instead of modifying existing payment logic every time a new payment method is added, we can use an interface:
+			interface Payment {
+				void pay();
+			}
+
+			class CardPayment implements Payment {
+				public void pay() {}
+			}
+
+			class UPIPayment implements Payment {
+				public void pay() {}
+			}
+
+	3. L — Liskov Substitution Principle
+		A child class should be replaceable for its parent without breaking the application. A child class should be usable wherever its parent class is expected,
+		without breaking the program.
+		Example: if Bird has a fly() method, making Penguin extends Bird can violate LSP because penguins cannot fly.
+
+	4. I — Interface Segregation Principle
+		A class should not be forced to implement methods it doesn't need.
+		Instead of one large interface: Split it into smaller interfaces where appropriate.
+			interface Loan {
+				void homeLoan();
+				void carLoan();
+			}
+			Segregate to : CarLoan, HomeLoan, BusinessLoan
+			class LoanService implements CarLoan, HomeLoan { }
+
+	5. D — Dependency Inversion Principle
+		High-level modules should depend on abstractions, not concrete implementations. Abstractions should not depend on details. Details should depend on abstractions.
+		Spring's dependency injection is commonly used to achieve this:
+			@Service
+			class OrderService {
+
+				private final PaymentService paymentService;
+
+				OrderService(PaymentService paymentService) {
+					this.paymentService = paymentService;
+				}
+			}
+=========================================================================================================================================================
+Q: What is the N+1 query problem?
+	N+1 occurs when we execute one query to fetch N parent records and then execute another query for each parent record.
+	Example:
+		1 query → fetch 100 Orders
+		100 queries → fetch customer for each order
+	Total:
+		1 + 100 = 101 queries				// That's the N+1 problem.
+
+	Code :
+		List<Order> orders = orderRepository.findAll();
+
+		for (Order order : orders) {
+			order.getCustomer().getName();		// If customer is lazily loaded, Hibernate may execute a separate query for every order.
+		}
+
+	"N+1 is a performance problem where Hibernate executes one query to fetch parent entities and then N additional queries to fetch related entities.
+	I would identify it using SQL logs or monitoring and solve it using join fetch, entity graphs, DTO projections or batch fetching depending on the use case."
+=========================================================================================================================================================
+Q: What is dirty checking in Hibernate?
+	Dirty checking is the mechanism by which Hibernate automatically detects changes made to a managed entity and generates the required SQL UPDATE during transaction flush/commit.
+
+	Example:
+		@Transactional
+		public void updateUser(Long id) {
+
+			User user = userRepository.findById(id).orElseThrow();
+
+			user.setName("Rahul");						// Hibernate can detect that the managed user changed
+		}
+
+		userRepository.save(user);				// We don't explicitly call:
+
+		Hibernate can detect that the managed User changed and generate:
+			UPDATE user
+			SET name = 'Rahul'
+			WHERE id = ?;
+
+		How does it work?
+			find entity
+				↓
+			Entity becomes managed
+				↓
+			Hibernate keeps original state
+				↓
+			Application modifies entity
+				↓
+			Hibernate detects difference
+				↓
+			Flush
+				↓
+			UPDATE SQL
+
+	To achieve this :
+		1. Entity Must Be Managed
+			Customer customer = customerRepository.findById(id).get();					// new Customer(); will not work
+			customer.setName("New Name");
+
+		2. @Transactional			// required
+
+
+"Hibernate maintains the original state of managed entities. During flush, it compares the current state with the original state. If it detects a change,
+it generates the required SQL update. This is called dirty checking."
+=========================================================================================================================================================
+Q: What is CQRS?
+	CQRS stands for Command Query Responsibility Segregation. IT is an architectural pattern that separates read operations (Queries) from write operations (Commands).
+
+	Why use CQRS?
+		Read and write workloads can be scaled independently.
+		Read model can be optimized for queries.
+		Complex domains can benefit from separate models.
+		Can work well with event-driven architecture.
+
+	Disadvantage
+		More complexity.
+		Potential eventual consistency.
+		More infrastructure and synchronization logic.
+
+	Instead of using the same model for both reading and updating data:
+		Command Side → Handles Create, Update, Delete operations.
+		Query Side → Handles Read operations.
+
+		Business logic becomes easier to maintain.
+			CustomerCommandService
+			CustomerQueryService
+
+		4. Supports Event-Driven Architecture
+			Often used with:
+				Kafka
+				RabbitMQ
+=========================================================================================================================================================
+Transaction mgmt
+
+=========================================================================================================================================================
+Q: What is Singleton Design Pattern?
+	Singleton ensures only one instance of a class exists throughout the application.
+	 /** Classic thread-safe singleton using volatile + double-checked locking. */
+		static final class DclSingleton {
+			private static volatile DclSingleton instance;
+
+			private DclSingleton() { }
+
+			static DclSingleton getInstance() {
+				if (instance == null) {                       // 1st check (no lock)
+					synchronized (DclSingleton.class) {
+						if (instance == null) {               // 2nd check (with lock)
+							instance = new DclSingleton();
+						}
+					}
+				}
+				return instance;
+			}
+		}
+
+		By default Spring Beans are:
+			@Scope("singleton")
+
+		Use Cases :
+			Configuration Manager
+			Logging Service
+			Cache Manager
+
+=========================================================================================================================================================
+4. What is Strategy Design Pattern?
+	Strategy Pattern defines multiple algorithms and allows selecting one at runtime.
+	Without Strategy:
+		if(paymentType.equals("CARD")) {}
+		else if(paymentType.equals("UPI")) {}
+		else if(paymentType.equals("NET_BANKING")) {}
+
+	With Strategy:
+	interface PaymentStrategy {
+		void pay();
+	}
+
+	CardPaymentStrategy
+	UpiPaymentStrategy
+	NetBankingStrategy
+
+	Benefits:
+		Open/Closed Principle
+		Easily extensible
+		Removes large if-else blocks
+=========================================================================================================================================================
+Q: What is Serialization?
+	Serialization converts an object into a byte stream so it can be:
+		Stored
+		Transferred over network
+		Cached
+
+	Deserialization
+		Converting byte stream back into object.
+
+	What is serialVersionUID ?
+		serialVersionUID is a unique version identifier used during serialization.
+=========================================================================================================================================================
+Q: What are ACID Properties?
+	ACID guarantees reliable database transactions. It ensures transactions are reliable, consistent, isolated, and durable.
+	A - Atomicity
+		Atomicity ensures that all operations in a transaction succeed together or the entire transaction is rolled back. No partial updates remain.
+		Debit Account / Credit Account			// Both succeed or rollback.
+	C - Consistency
+		Database remains in a valid state. A transaction must move the database from one valid state to another valid state.		// Balance, inventory cannot become negative.
+	I - Isolation
+		Isolation ensures that concurrent transactions do not affect each other and execute as if they were running independently.		// Two users updating same account.
+	D - Durability
+		Durability guarantees that once a transaction is committed, its changes are permanently saved and will survive crashes or system failures.		// System crash after commit
+=========================================================================================================================================================
+Q: Explain Internal Working of @Transactional
+	@Transactional works using AOP proxies that start, commit, or rollback transactions around method execution.
+	When Spring sees:
+		@Transactional
+		public void transferMoney() {
+		}
+	it does not call the method directly.
+	Spring creates a Proxy Object around the bean which will begin, commit or rollback the transaction.
+
+	Execution flow :
+		Client
+		   |
+		   v
+		Spring Proxy
+		   |
+		Begin Transaction
+		   |
+		Actual Method
+		   |
+		Commit/Rollback
+
+	Success Scenario:	COMMIT
+	Failure Scenario: throw new RuntimeException();		ROLLBACK
+
+	By default rollback happens for: RuntimeException, ERROR
+
+	Not for checked exceptions.
+	For checked exceptions:
+		@Transactional(
+			rollbackFor = Exception.class		Proxy is bypassed. Hence transaction may not work.
+		)
+=========================================================================================================================================================
+Q: What is volatile Keyword?
+	volatile guarantees visibility of changes across threads.
+
+	private volatile boolean running = true;
+
+	Without volatile :
+		Thread may read cached value: and never see updates.
+
+	With volatile :
+		Every read happens from main memory.		// All threads immediately see the latest value.
+
+=========================================================================================================================================================
+Q: @Transactional exists in both Spring and Jakarta. What is the difference?
+	There are two annotations:
+	1. Spring @Transactional (Highly recommended)
+		org.springframework.transaction.annotation.Transactional
+		Example:
+			@Transactional(
+				propagation = Propagation.REQUIRES_NEW,
+				isolation = Isolation.REPEATABLE_READ,
+				rollbackFor = Exception.class
+			)
+			public void process() {
+			}
+		Features :
+			Supports advanced transaction configuration:
+				Propagation
+				Isolation Level
+				Timeout
+				Read Only
+				rollbackFor
+				noRollbackFor
+
+	2. Jakarta @Transactional
+		jakarta.transaction.Transactional
+		Part of Jakarta EE (formerly Java EE).
+		Example:
+			@Transactional
+			public void process() {
+			}
+
+		Features: But provides fewer customization options than Spring's version.
+			TxType.REQUIRED
+			TxType.REQUIRES_NEW
+			TxType.MANDATORY
+
+| Feature                            | Spring `@Transactional`                                             | Jakarta `@Transactional`                                           |
+| ---------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------|
+| Package                            | `org.springframework.transaction.annotation.Transactional`          | `jakarta.transaction.Transactional`                                |
+| Ownership                          | Spring Framework                                                    | Jakarta EE Specification                                           |
+| Common Usage                       | Spring / Spring Boot Applications                                   | Jakarta EE Applications                                            |
+| Read-Only Transactions             | ✅ Supported (`readOnly=true`)                                      | ❌ Not Supported                                                   |
+| Isolation Levels                   | ✅ Supported (`READ_COMMITTED`, `SERIALIZABLE`, etc.)               | ❌ Not Supported                                                   |
+| Timeout Configuration              | ✅ Supported (`timeout=30`)                                         | ❌ Not Supported                                                   |
+| Rollback Configuration             | `rollbackFor`, `noRollbackFor`                                      | `rollbackOn`, `dontRollbackOn`                                     |
+| Propagation Support                | ✅ Full Support                                                     | ✅ Basic Support                                                   |
+| `REQUIRED`                         | ✅                                                                  | ✅                                                                 |
+| `REQUIRES_NEW`                     | ✅                                                                  | ✅                                                                 |
+| `SUPPORTS`                         | ✅                                                                  | ✅                                                                 |
+| `MANDATORY`                        | ✅                                                                  | ✅                                                                 |
+| `NOT_SUPPORTED`                    | ✅                                                                  | ✅                                                                 |
+| `NEVER`                            | ✅                                                                  | ✅                                                                 |
+| `NESTED`                           | ✅ Supported                                                        | ❌ Not Supported                                                   |
+| Integration with Spring AOP        | ✅ Native Integration                                               | ⚠️ Works through Spring support                                    |
+| Custom Transaction Manager Support | ✅ Extensive                                                        | Limited                                                            |
+| Flexibility                        | High                                                                | Moderate                                                           |
+| Recommended in Spring Boot         | ✅ Yes (Preferred)                                                  | ⚠️ Possible but less common                                        |
+| Typical Interview Answer           | Most enterprise Spring Boot applications use this because of        | Useful for framework-neutral/Jakarta EE applications but has fewer |
+										richer transaction controls.										 transaction features.
+=========================================================================================================================================================
+
+Q: What is CORS ?
+	CORS (Cross-Origin Resource Sharing) is a browser security mechanism that controls whether a web page from one origin can access resources from another origin.
+	An Origin is defined by:
+		Protocol + Domain + Port
+
+	http://localhost:3000
+	http://localhost:8080		// have different ports, so they are considered different origins.
+
+	Suppose your frontend is running on:			http://localhost:3000
+	and your Spring Boot backend is running on:		http://localhost:8080
+
+	Frontend makes a request:	fetch("http://localhost:8080/customers")
+	Browser blocks it:		Access to fetch has been blocked by CORS policy. 			// because it's a cross-origin request.
+
+	How CORS Works :
+		Browser Request -
+			Frontend
+			http://localhost:3000
+					↓
+			GET /customers
+					↓
+			Backend
+			http://localhost:8080
+
+		Backend Response -
+			Access-Control-Allow-Origin: http://localhost:3000
+
+
+		Browser checks this header.
+			If allowed:	✅ Response returned
+
+			Otherwise:	❌ Request blocked
+
+		# Spring Boot Example :
+		Controller Level
+			@RestController
+			@CrossOrigin(origins = "http://localhost:3000")					// Only Frontend app running on port 3000 can access this API.
+			public class CustomerController {
+
+				@GetMapping("/customers")
+				public List<Customer> getCustomers() {
+					return List.of();
+				}
+			}
+
+		# Global Configuration :
+		@Configuration
+		public class CorsConfig {
+
+			@Bean
+			public WebMvcConfigurer corsConfigurer() {
+
+				return new WebMvcConfigurer() {
+
+					@Override
+					public void addCorsMappings(CorsRegistry registry) {
+
+						registry.addMapping("/**")
+								.allowedOrigins("http://localhost:3000")
+								.allowedMethods("*");
+					}
+				};
+			}
+		}
+
+		Common CORS HTTP Headers:
+			Access-Control-Allow-Origin: http://localhost:3000
+			Access-Control-Allow-Methods: GET,POST,PUT,DELETE
+			Access-Control-Allow-Headers: Authorization, Content-Type
+			Access-Control-Allow-Credentials: true
+=========================================================================================================================================================
+Q: On which Microservice Patterns you have worked ?
+	1. API Gateway Pattern
+		Single entry point for all client requests.
+		Handled routing, authentication, logging and rate limiting.
+
+	2. Database per Service Pattern
+		Each microservice owned its own database.
+		Customer Service, Account Service and Transaction Service had separate schemas/databases.
+		Avoided direct database sharing between services.
+
+	3. Circuit Breaker Pattern
+		Used Resilience4j.
+		Prevented cascading failures when dependent services were unavailable.
+
+	4. CQRS Pattern
+		Separated command and query responsibilities.
+		Different services/components handled writes and reads independently.
+
+	5. Event-Driven Communication
+		Used Kafka for asynchronous communication between services.
+		This reduced tight coupling between services.
+
+	6. Saga Pattern
+		For distributed transactions across multiple services.
+		Used compensating transactions instead of traditional database transactions.
+
+	7. Service Discovery Pattern
+		Used Eureka Server.
+		Services registered themselves dynamically.
+		registered with Eureka and were discovered by service name instead of hardcoded URLs.
+=========================================================================================================================================================
+Q: Explain use of API Gateway Pattern ?
+	Routing client requests
+	Security
+	Authentication, Authorization
+	Load Balancing
+	Logging & Monitoring
+	Rate limiting
+=========================================================================================================================================================
+Q: On which Design pattern you worked or know ?
+	Creational Design Patterns :
+		Singleton
+		Builder
+		Factory
+		AbstractFactory
+		Prototype
+
+	Behavioral Design Patterns :
+        Strategy
+        Observer
+        Chain of Responsibility
+        Template Method
+        Command
+
+	Structural Design Patterns :
+        Adapter
+        Facade
+        Proxy
+        Decorator
+        Composite
+=========================================================================================================================================================
+Q: What sonarqube check and works ?
+
+=========================================================================================================================================================
+Q: What is difference between EC2 and Docker ?
+
+=========================================================================================================================================================
+Q: I have static block, variable, and method ? What will be execution flow ?

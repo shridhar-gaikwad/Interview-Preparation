@@ -25,10 +25,11 @@ But after deploying to PROD, the application is failing and CPU usage jumps to c
 			Thread contention or thread-pool issues
 		
 		4. Check recent changes
-			I would check the deployment details and recent commits/configuration changes. I would correlate the CPU spike and application failures with the deployment timestamp.
+			I would check the deployment details and recent commits/configuration changes. I would correlate the CPU spike and
+			application failures with the deployment timestamp.
 
 		5. Mitigate first
-			If the application is severely impacting users, I would follow the rollback strategy and roll back to the last known stable version, 
+			If the application is severely impacting users, I would follow the rollback strategy and roll back to the last known stable version,
 			or disable the problematic feature using a feature flag if available. After rollback, I would verify that CPU and error rates return to normal.
 		
 		6. Root-cause analysis
@@ -215,7 +216,7 @@ Q: When is data released / removed from a HashMap ?
 		Data is removed from a HashMap when we explicitly remove the entry using methods like remove(), clear(), or when we replace/update the value associated with a key.
 
 Q: What happens when one service class autowires another service class and they depend on each other ?
-    If i will use @Lasy initialization for circular dependencies ?
+    If I use @Lazy initialization for circular dependencies ?
 		With constructor injection, Spring detects the circular dependency while creating the beans and normally fails during application startup 
 		with a BeanCurrentlyInCreationException / circular-dependency-related startup failure.
 		Spring cannot create OrderService without PaymentService, but cannot create PaymentService without OrderService.
@@ -282,7 +283,7 @@ Q: Working of @Transactional annotation and will it work for consistency across 
 	No, it will not work to maintain consistency across multiple microservices. @Transactional in Order Service cannot automatically
 	roll back transactions that have already committed in Payment or Inventory services.
 
-Q: Payment succeds, but the user doesn't receive the order response. The user clicks the button multiple times. Will money be debited multiple times ?
+Q: Payment succeeds, but the user doesn't receive the order response. The user clicks the button multiple times. Will money be debited multiple times ?
 	It can be debited multiple times if the payment API is not designed to be idempotent.
 	In a production payment system, we should prevent this using an idempotency key / unique transaction ID.
 		1. User clicks "Pay"
@@ -309,7 +310,7 @@ Q: Payment succeds, but the user doesn't receive the order response. The user cl
 	
 Q: What are idempotent methods and how does idempotency method work ?
 		GET, PUT, DELETE are idempotent HTTP method
-		Storing in DB and checking if request is idemp or not is correct way.
+		Storing in DB and checking if request is idempotent or not is a correct way.
 
 Q: How does idempotency work with kafka ?
 		Kafka itself does not automatically make your business operation idempotent. Kafka can deliver a message again,
@@ -355,5 +356,15 @@ Q: 2 QA are working on the same application, environment and same database. They
 
 	# Race condition → Optimistic Locking (@Version) or Pessimistic Locking (FOR UPDATE).
 	
+    | Feature           | Optimistic Locking         | Pessimistic Locking              |
+    | ----------------- | -------------------------- | -------------------------------- |
+    | Assumption        | Conflicts are rare         | Conflicts are frequent           |
+    | Locking           | No DB lock initially       | DB row is locked immediately     |
+    | Performance       | Better                     | Slower                           |
+    | Scalability       | High                       | Lower                            |
+    | Concurrent Access | Allowed                    | Restricted                       |
+    | Failure           | Version mismatch exception | Other transaction waits          |
+    | JPA Support       | `@Version`                 | `LockModeType.PESSIMISTIC_WRITE` |
+    | Best For          | Read-heavy systems         | High-conflict systems            |
 
 	
