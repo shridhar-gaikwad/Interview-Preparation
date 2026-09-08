@@ -458,10 +458,75 @@ Q: On which Design pattern you worked or know ?
         Decorator
         Composite
 =========================================================================================================================================================
-Q: What sonarqube check and works ?
+Q: What sonarqube check and how it works ?
+    SonarQube is a static code analysis tool that continuously inspects source code for:
+        Bugs
+            Vulnerabilities
+            Code Smells
+            Security Issues
+            Code Duplications
+            Test Coverage
+            Maintainability Issues
+        How it works:
+            1. Code Analysis: SonarQube scans the source code using analyzers for different programming languages.
+            2. Rule Evaluation: It applies predefined rules to identify issues in the codebase.
+            3. Issue Reporting: SonarQube generates a report highlighting detected issues, categorized by severity and type.
+            4. Quality Gate: It evaluates the code against a quality gate, which defines the minimum acceptable standards for code quality.
+            5. Continuous Integration: SonarQube can be integrated into CI/CD pipelines to automatically analyze code during the build process.
 
+        SonarQube Quality Gate
+            A Quality Gate is a set of conditions that code must meet to be considered acceptable for production.
+            It includes criteria such as:
+                No critical or blocker issues
+                Minimum code coverage percentage
+                No new code smells or vulnerabilities
+                Maintainability rating above a certain threshold
+
+        Q: Can SonarQube find runtime issues?
+            No, SonarQube primarily focuses on static code analysis and cannot detect runtime issues that occur during program execution.
 =========================================================================================================================================================
 Q: What is difference between EC2 and Docker ?
-
+    EC2 (Elastic Compute Cloud) is a cloud computing service that provides resizable virtual servers in the cloud.
+    Docker is a containerization platform that allows you to package an application and its dependencies into a lightweight, portable container.
 =========================================================================================================================================================
 Q: I have static block, variable, and method ? What will be execution flow ?
+    Execution flow:
+        1. Static variables are initialized first.
+        2. Static blocks are executed in the order they appear in the class.
+        3. Instance variables are initialized when an object is created.
+        4. Instance blocks are executed in the order they appear in the class when an object is created.
+        5. Constructors are executed after instance blocks when an object is created.
+        6. Methods are executed when they are called.
+
+    Example:
+        public class Example {
+            static int staticVar = initializeStaticVar();
+            static {
+                System.out.println("Static block executed");
+            }
+            int instanceVar = initializeInstanceVar();
+            {
+                System.out.println("Instance block executed");
+            }
+            public Example() {
+                System.out.println("Constructor executed");
+            }
+            static int initializeStaticVar() {
+                System.out.println("Static variable initialized");
+                return 1;
+            }
+            int initializeInstanceVar() {
+                System.out.println("Instance variable initialized");
+                return 2;
+            }
+            public static void main(String[] args) {
+                new Example();
+            }
+        }
+
+    Output:
+        Static variable initialized
+        Static block executed
+        Instance variable initialized
+        Instance block executed
+        Constructor executed
