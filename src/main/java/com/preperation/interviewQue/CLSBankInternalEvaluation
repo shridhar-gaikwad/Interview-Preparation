@@ -29,8 +29,8 @@ Q: What are SOLID principles?
 			}
 
 	3. L — Liskov Substitution Principle
-		A child class should be replaceable for its parent without breaking the application. A child class should be usable wherever its parent class is expected,
-		without breaking the program.
+		A child class should be replaceable for its parent without breaking the application. A child class should be usable wherever
+		its parent class is expected, without breaking the program.
 		Example: if Bird has a fly() method, making Penguin extends Bird can violate LSP because penguins cannot fly.
 
 	4. I — Interface Segregation Principle
@@ -58,6 +58,7 @@ Q: What are SOLID principles?
 =========================================================================================================================================================
 Q: What is the N+1 query problem?
 	N+1 occurs when we execute one query to fetch N parent records and then execute another query for each parent record.
+	N+1 happens because of Lazy Loading.
 	Example:
 		1 query → fetch 100 Orders
 		100 queries → fetch customer for each order
@@ -104,7 +105,7 @@ Q: What is dirty checking in Hibernate?
 				↓
 			Hibernate detects difference
 				↓
-			Flush
+			  Flush
 				↓
 			UPDATE SQL
 
@@ -114,7 +115,6 @@ Q: What is dirty checking in Hibernate?
 			customer.setName("New Name");
 
 		2. @Transactional			// required
-
 
 "Hibernate maintains the original state of managed entities. During flush, it compares the current state with the original state. If it detects a change,
 it generates the required SQL update. This is called dirty checking."
@@ -146,9 +146,6 @@ Q: What is CQRS?
 				Kafka
 				RabbitMQ
 =========================================================================================================================================================
-Transaction mgmt
-
-=========================================================================================================================================================
 Q: What is Singleton Design Pattern?
 	Singleton ensures only one instance of a class exists throughout the application.
 	 /** Classic thread-safe singleton using volatile + double-checked locking. */
@@ -179,7 +176,8 @@ Q: What is Singleton Design Pattern?
 
 =========================================================================================================================================================
 4. What is Strategy Design Pattern?
-	Strategy Pattern defines multiple algorithms and allows selecting one at runtime.
+	The Strategy Pattern is used when you have multiple ways (algorithms/behaviors) to perform the same task and
+	want to choose between them at runtime.
 	Without Strategy:
 		if(paymentType.equals("CARD")) {}
 		else if(paymentType.equals("UPI")) {}
@@ -202,7 +200,7 @@ Q: What is Singleton Design Pattern?
 Q: What is Serialization?
 	Serialization converts an object into a byte stream so it can be:
 		Stored
-		Transferred over network
+		Transferred over network (Json / XML)
 		Cached
 
 	Deserialization
@@ -210,6 +208,12 @@ Q: What is Serialization?
 
 	What is serialVersionUID ?
 		serialVersionUID is a unique version identifier used during serialization.
+		private static final long serialVersionUID = 1L;
+
+	How can we achieve Serialization in Java?
+        1. Implement java.io.Serializable interface
+        2. Mark fields as transient if they should not be serialized
+        3. Optionally define a serialVersionUID for version control
 =========================================================================================================================================================
 Q: What are ACID Properties?
 	ACID guarantees reliable database transactions. It ensures transactions are reliable, consistent, isolated, and durable.
@@ -257,7 +261,6 @@ Q: Explain Internal Working of @Transactional
 =========================================================================================================================================================
 Q: What is volatile Keyword?
 	volatile guarantees visibility of changes across threads.
-
 	private volatile boolean running = true;
 
 	Without volatile :
@@ -265,7 +268,6 @@ Q: What is volatile Keyword?
 
 	With volatile :
 		Every read happens from main memory.		// All threads immediately see the latest value.
-
 =========================================================================================================================================================
 Q: @Transactional exists in both Spring and Jakarta. What is the difference?
 	There are two annotations:
@@ -353,43 +355,42 @@ Q: What is CORS ?
 		Backend Response -
 			Access-Control-Allow-Origin: http://localhost:3000
 
-
 		Browser checks this header.
 			If allowed:	✅ Response returned
 
 			Otherwise:	❌ Request blocked
 
 		# Spring Boot Example :
-		Controller Level
-			@RestController
-			@CrossOrigin(origins = "http://localhost:3000")					// Only Frontend app running on port 3000 can access this API.
-			public class CustomerController {
+            Controller Level
+                @RestController
+                @CrossOrigin(origins = "http://localhost:3000")					// Only Frontend app running on port 3000 can access this API.
+                public class CustomerController {
 
-				@GetMapping("/customers")
-				public List<Customer> getCustomers() {
-					return List.of();
-				}
-			}
+                    @GetMapping("/customers")
+                    public List<Customer> getCustomers() {
+                        return List.of();
+                    }
+                }
 
 		# Global Configuration :
-		@Configuration
-		public class CorsConfig {
+            @Configuration
+            public class CorsConfig {
 
-			@Bean
-			public WebMvcConfigurer corsConfigurer() {
+                @Bean
+                public WebMvcConfigurer corsConfigurer() {
 
-				return new WebMvcConfigurer() {
+                    return new WebMvcConfigurer() {
 
-					@Override
-					public void addCorsMappings(CorsRegistry registry) {
+                        @Override
+                        public void addCorsMappings(CorsRegistry registry) {
 
-						registry.addMapping("/**")
-								.allowedOrigins("http://localhost:3000")
-								.allowedMethods("*");
-					}
-				};
-			}
-		}
+                            registry.addMapping("/**")
+                                    .allowedOrigins("http://localhost:3000")
+                                    .allowedMethods("*");
+                        }
+                    };
+                }
+            }
 
 		Common CORS HTTP Headers:
 			Access-Control-Allow-Origin: http://localhost:3000
@@ -530,3 +531,122 @@ Q: I have static block, variable, and method ? What will be execution flow ?
         Instance variable initialized
         Instance block executed
         Constructor executed
+=========================================================================================================================================================
+Q: Which Design Patterns are used in Spring Framework?
+    +----+------------------------+--------------------------+-------------------------------+
+    | #  | Design Pattern         | Used In Spring           | Example                       |
+    +----+------------------------+--------------------------+-------------------------------+
+    | 1  | Singleton              | Bean Scope               | @Component (default)          |
+    | 2  | Prototype              | Bean Scope               | @Scope("prototype")           |
+    | 3  | Factory                | Bean Creation            | BeanFactory, ApplicationContext|
+    | 4  | Proxy                  | AOP, Transactions        | @Transactional, @Cacheable    |
+    | 5  | Template Method        | JDBC, Transactions       | JdbcTemplate, TransactionTemplate |
+    | 6  | Strategy               | MVC, Transactions        | HandlerMapping, HandlerAdapter|
+    | 7  | Observer               | Application Events       | @EventListener                |
+    | 8  | Adapter                | Spring MVC               | HandlerAdapter                |
+    | 9  | Chain of Responsibility | Web, Security           | Filter Chain, Security Filter |
+    | 10 | Front Controller       | Spring MVC               | DispatcherServlet             |
+    | 11 | Decorator              | Spring Internals         | Wrapper/Decorator classes     |
+    | 12 | Composite              | Spring Internals         | Hierarchical structures       |
+    | 13 | Dependency Injection   | Core Spring / IoC        | Constructor Injection         |
+    +----+------------------------+--------------------------+-------------------------------+
+
+    IMPORTANT PATTERNS FOR INTERVIEWS
+    ==================================
+
+    1. Singleton
+       - Default Spring bean scope.
+       - One instance per ApplicationContext.
+       - Example: @Component
+
+    2. Prototype
+       - Creates a new object whenever the bean is requested.
+       - Example: @Scope("prototype")
+
+    3. Factory
+       - Spring creates and manages objects.
+       - We generally don't create Spring beans using new.
+       - Examples: BeanFactory, ApplicationContext
+
+    4. Proxy
+       - Adds behavior around the actual object.
+       - Very important in Spring.
+       - Used in:
+           * AOP
+           * @Transactional
+           * @Cacheable
+           * @Async
+           * Security
+
+    5. Template Method
+       - Defines a common workflow and allows customization of specific steps.
+       - Examples:
+           * JdbcTemplate
+           * RestTemplate
+           * TransactionTemplate
+
+    6. Strategy
+       - Allows different implementations/algorithms to be selected.
+       - Examples:
+           * HandlerMapping
+           * HandlerAdapter
+           * ViewResolver
+
+    7. Observer
+       - One object publishes an event and multiple listeners can react.
+       - Examples:
+           * ApplicationEventPublisher
+           * @EventListener
+
+    8. Adapter
+       - Makes different interfaces work with a common interface.
+       - Example:
+           * HandlerAdapter in Spring MVC
+
+    9. Chain of Responsibility
+       - Request passes through a chain of handlers.
+       - Examples:
+           * Servlet Filter Chain
+           * Spring Security Filter Chain
+
+    10. Front Controller
+        - Provides a single entry point for web requests.
+        - Example:
+            * DispatcherServlet in Spring MVC
+
+
+    QUICK INTERVIEW ANSWER
+    ======================
+
+    Q: Which design patterns are used in Spring Framework?
+
+    A:
+    Spring uses several design patterns such as Singleton, Prototype,
+    Factory, Proxy, Template Method, Strategy, Observer, Adapter,
+    Chain of Responsibility, and Front Controller.
+
+    The most important ones are:
+    - Singleton     -> Default bean scope
+    - Factory       -> BeanFactory / ApplicationContext
+    - Proxy         -> AOP / @Transactional
+    - Template      -> JdbcTemplate
+    - Strategy      -> Pluggable implementations
+    - Observer      -> Application events
+    - Adapter       -> HandlerAdapter
+    - Front Controller -> DispatcherServlet
+=========================================================================================================================================================
+Q: How we do DB connection in Spring Boot ?
+    1. Add database dependency in pom.xml
+    2. Configure database properties in application.properties or application.yml
+    3. Use Spring Data JPA repositories or JdbcTemplate for database operations
+=========================================================================================================================================================
+Q: Difference between Spring and Spring Boot ?
+
+    | Feature                  | Spring Framework                          | Spring Boot                              |
+    |--------------------------|-------------------------------------------|------------------------------------------|
+    | Setup Complexity         | Requires manual configuration             | Auto-configuration simplifies setup      |
+    | Dependencies Management  | Manual dependency management              | Starter dependencies simplify management |
+    | Embedded Server          | Not included, requires external server    | Embedded Tomcat/Jetty/Undertow included  |
+    | Configuration            | XML or Java-based configuration           | Convention over configuration, properties|
+    | Opinionated Defaults     | Less opinionated, more flexible           | Opinionated defaults for rapid development|
+    | Microservices Support    | Requires additional setup                 | Built-in support for microservices       |
