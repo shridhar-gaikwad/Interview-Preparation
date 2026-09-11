@@ -2,13 +2,12 @@ package com.preperation.java.Java17;
 
 /*
 Java automatically generates:
-
-Private final fields
-Constructor
-Getter-like methods (id(), name())
-equals()
-hashCode()
-toString()
+    Private final fields
+    Constructor
+    Getter-like methods (id(), name())
+    equals()
+    hashCode()
+    toString()
  */
 public record EmployeeRecord(int id, String name, String role, double salary) {
 
