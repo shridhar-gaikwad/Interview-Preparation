@@ -14,6 +14,11 @@ package com.preperation.java.designPatterns;
  * Behavioral patterns answer:
  *      "How do objects communicate and behave?"
  *
+ * Easy way to remember
+    Strategy       → "Which algorithm should I use?"
+    Observer       → "Who should I notify?"
+    Template       → "What steps must I follow?"
+    Chain          → "Who should handle this request?"
  * -------------------------------------------------------------------------------------
  * WHY WERE THEY INTRODUCED?
  * -------------------------------------------------------------------------------------
@@ -45,26 +50,20 @@ package com.preperation.java.designPatterns;
  * =====================================================================================
  *
  * Defines a family of algorithms and allows selecting one at runtime.
- *
  * Instead of:
- *
  *      if(paymentType.equals("UPI")) {}
  *      else if(paymentType.equals("CARD")) {}
  *      else if(paymentType.equals("NET_BANKING")) {}
- *
  * Use:
- *
  *      PaymentStrategy strategy = new UpiPayment();
  *      strategy.pay();
  *
  * Benefits:
- *
  *      - Removes large if/else blocks
  *      - Open/Closed Principle
  *      - Easy to add new strategies
  *
  * Real Examples:
- *
  *      Payment Methods
  *      Discount Calculation
  *      Notification Channels
