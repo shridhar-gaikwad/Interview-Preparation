@@ -1,0 +1,211 @@
+Q: Write Java code which take generic input and return generic output.
+
+    public static <T, R> R processInput(T input, java.util.function.Function<T, R> processor) {
+        return processor.apply(input);
+    }
+=================================================================================================================================
+Q: Suddenly application starts throwing 500 errors. What to do ? provide steps.
+    When an application suddenly starts throwing 500 Internal Server Errors in production, a systematic triage approach is required
+    to isolate whether the issue is infrastructural, code-related, or caused by a downstream dependency.
+        1.Check Centralized Logs & Dashboards:
+            Step 1: Triage
+            Navigate to your log aggregation tool (ELK, Datadog, CloudWatch) and APM (New Relic, Dynatrace) to isolate the
+            exact stack trace, exception type, and the affected API endpoint.
+            Verify success by identifying the root exception class (e.g., NullPointerException, DataAccessException, or TimeoutException)
+            and the timestamp when the spike began.
+        2.Inspect Container & Pod Health:
+            Step 2: Infrastructure
+            Check Kubernetes or AWS ECS resource metrics to see if pods are restarting (OOMKilled), throttling CPU,
+            or failing liveness/readiness probes.Verify success by checking pod restart counts using kubectl get pods and
+            ensuring CPU/Memory usage is well below limits.
+        3.Verify Downstream Dependencies:
+            Step 3: Dependencies.
+            Check the health of external integrations, databases, caches (Redis), and message brokers (Kafka) that the service relies on.
+            Verify success by confirming dependency health endpoints return 200 OK and connection pools are active.
+        4.Review Recent Deployments and Configs:
+            Step 4: Change Management
+            Check CI/CD pipelines, Git commit history, or recent environment variable/feature flag updates to see if a faulty deployment
+            or bad config change was pushed. Verify success by correlating the error spike start time with the exact deployment timestamp.
+        5.Execute Rollback or Hotfix:
+            Step 5: Mitigation
+            If a recent deployment caused the issue, immediately trigger a rollback via your deployment pipeline, or apply a hotfix
+            if the bug is isolated. Verify success by monitoring the error rate drop back to baseline levels on the APM dashboard.
+=================================================================================================================================
+Q: Found DB delays in application - how will you improve that provide steps.
+    Database bottlenecks are a common cause of high API latency in Spring Boot microservices.
+    1. Identify Slow Queries
+        Find out database slow query logs (e.g., PostgreSQL slow_log, MySQL slow query log) to pinpoint statements
+        taking longer than an acceptable threshold (e.g., >200ms).
+    2. Analyze Execution Plans
+        Check:
+            execution plan
+            full table scans
+            unnecessary joins
+            missing indexes
+            inefficient WHERE conditions
+            sorting large datasets
+            unnecessary columns
+            N+1 queries
+    3. Check and resolve N+1 Query Problems
+        Inspect Hibernate/JPA logs for excessive query generation.
+        Fix N+1 issues by using @EntityGraph, JOIN FETCH, or batch fetching (@BatchSize) in your Spring Data JPA repositories.
+        Verify success by observing a dramatic reduction in total executed SQL queries per API request in the logs.
+    4. Implement Caching
+        Introduce distributed caching (e.g., Redis) using Spring's @Cacheable annotation for read-heavy, low-volatility reference data.
+        Verify success by checking cache hit ratios and noting a drop in database CPU utilization.
+    5. Tune Connection Pooling
+        Tune HikariCP settings in application.yml (e.g., maximum-pool-size, connection-timeout, idle-timeout) to match your database
+        server's capacity and concurrency requirements.
+        Verify success by eliminating connection acquisition timeouts under peak load tests.
+    6. Check database health
+        Investigate:
+            CPU
+            memory
+            I/O
+            locks
+            deadlocks
+            long-running transactions
+            connection count
+            replication lag
+            storage performance
+    7. Pagination
+       Avoid loading huge datasets:
+           Page<Order> findByCustomerId(
+               Long customerId,
+               Pageable pageable
+           );
+       Instead of:
+        SELECT millions of rows
+=================================================================================================================================
+Q: Microservices not responding within time - what to investigate and and resolve ?
+    When microservices fail to respond within an acceptable timeframe, it typically points to resource starvation, network issues, or cascading blocks.
+    1. Determine the scope
+        Check:
+            Which API?
+            Which service?
+            All requests or specific requests?
+            All instances or only some instances?
+            Since when?
+            Is traffic unusually high?
+
+    2. Trace the request
+        Use distributed tracing:
+            Trace ID: abc123
+                API Gateway       50 ms
+                Order Service    100 ms
+                Payment Service  900 ms
+                DB               700 ms
+            Now I know where to investigate.
+
+    3. Check thread pools
+        A service may have sufficient CPU but still be slow because worker threads are blocked.
+        Check:
+            Tomcat/Jetty thread pool
+            Kafka consumer threads
+            blocked threads
+            thread dumps
+
+    4. Check downstream services
+        Investigate:
+            REST dependency latency
+            DB latency
+            Kafka delays
+            external APIs
+            Redis/cache
+            network issues
+
+    7. Check JVM
+        Look for:
+            high CPU
+            excessive GC
+            memory leaks
+            thread contention
+
+    8. Check infrastructure
+        Check:
+            pod restarts
+            CPU throttling
+            memory limits
+            node issues
+=================================================================================================================================
+Q: How to identify which microservice/component is causing the delay in multiple services application? How to prevent them ?
+    I use observability at three levels: metrics, logs, and distributed tracing. Distributed tracing is particularly useful
+    because it allows me to see the complete request path across multiple microservices.
+
+    Suppose we have:
+        API Gateway
+             ↓
+        Order Service
+             ↓
+        Payment Service
+             ↓
+        Inventory Service
+             ↓
+        Database
+
+    A single request could generate:
+        Total latency = 4 seconds
+
+        Gateway          50 ms
+        Order           100 ms
+        Payment         2.5 sec   ← bottleneck
+        Inventory        300 ms
+        Database         800 ms
+
+    Steps to identify the bottleneck
+    1. Add correlation/trace IDs
+        Every request should carry a trace ID across services.
+    2. Use distributed tracing
+    3. Monitor service-level metrics
+       For every service:
+           Request count
+           Error rate
+           p50 latency
+           CPU
+           Memory
+           GC
+           Thread pool
+           Connection pool
+
+    Q: How do you prevent these problems?
+        1. Timeouts
+        Every remote call should have an appropriate timeout.
+        Service A
+           |
+           | timeout = 2 sec            // Never allow requests to wait indefinitely.
+           ↓
+        Service B
+
+        2. 2. Circuit breaker
+           If Service B is unhealthy, Service A should stop continuously calling it.
+
+        3. Retry carefully
+           Retries can help transient failures, but uncontrolled retries can create a retry storm.
+
+           Use:
+
+           limited retry count
+
+           exponential backoff
+
+           jitter
+
+           retry only transient/idempotent operations where appropriate
+=================================================================================================================================
+Q: Working and benefits of circuit breaker pattern ?
+
+Q: How to get GC dump, Heap Dump ?
+
+Q: What to take care of regarding logging in application ?
+
+Q: What performance issues happens due to logging ? How to handle those performance issues ?
+
+Q: Which logs are recommended for which environment ?
+
+Q: Test-Driven development approach.
+
+Q: Huge traffic increase in terms of kubernetes - how to prevent traffic overload ?
+
+Q: Pod keeps restarting in loop - how to troubleshoot ?
+
+AWS and kubernetes basics
