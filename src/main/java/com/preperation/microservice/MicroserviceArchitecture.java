@@ -174,7 +174,8 @@ import java.util.Map;
  *     -> Retry, Circuit Breaker, Timeout, Bulkhead.
  * Q10: Why database per service?
  *     -> To keep services loosely coupled and independently scalable.
- *
+ * Q11: How do you handle failures between microservices?
+    *     -> Use retries with exponential backoff, circuit breakers, and fallback methods.
  * ONE-LINER SUMMARY:
  * Microservices split an app into independent services (Spring Boot + Spring Cloud),
  * enabling scalability and resilience, at the cost of distributed-system complexity.
