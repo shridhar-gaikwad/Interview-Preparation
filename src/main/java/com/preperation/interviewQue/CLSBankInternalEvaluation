@@ -620,20 +620,18 @@ Q: Which Design Patterns are used in Spring Framework?
 
     Q: Which design patterns are used in Spring Framework?
 
-    A:
-    Spring uses several design patterns such as Singleton, Prototype,
-    Factory, Proxy, Template Method, Strategy, Observer, Adapter,
-    Chain of Responsibility, and Front Controller.
+        Spring uses several design patterns such as Singleton, Prototype, Factory, Proxy, Template Method, Strategy, Observer,
+        Adapter, Chain of Responsibility, and Front Controller.
 
-    The most important ones are:
-    - Singleton     -> Default bean scope
-    - Factory       -> BeanFactory / ApplicationContext
-    - Proxy         -> AOP / @Transactional
-    - Template      -> JdbcTemplate
-    - Strategy      -> Pluggable implementations
-    - Observer      -> Application events
-    - Adapter       -> HandlerAdapter
-    - Front Controller -> DispatcherServlet
+        The most important ones are:
+        - Singleton     -> Default bean scope
+        - Factory       -> BeanFactory / ApplicationContext
+        - Proxy         -> AOP / @Transactional
+        - Template      -> JdbcTemplate
+        - Strategy      -> Pluggable implementations
+        - Observer      -> Application events
+        - Adapter       -> HandlerAdapter
+        - Front Controller -> DispatcherServlet
 =========================================================================================================================================================
 Q: How we do DB connection in Spring Boot ?
     1. Add database dependency in pom.xml
@@ -650,3 +648,73 @@ Q: Difference between Spring and Spring Boot ?
     | Configuration            | XML or Java-based configuration           | Convention over configuration, properties|
     | Opinionated Defaults     | Less opinionated, more flexible           | Opinionated defaults for rapid development|
     | Microservices Support    | Requires additional setup                 | Built-in support for microservices       |
+=========================================================================================================================================================
+Q: Does iterator of collection prevent ConcurrentModificationException?
+    No, Iterator does not prevent ConcurrentModificationException. It detects concurrent modifications and throws the exception
+    if the collection is modified while iterating.
+=========================================================================================================================================================
+Q: How we can achieve synchronization in Java?
+    1. Synchronized Methods
+        - Use the synchronized keyword on methods to make them thread-safe.
+        - Example:
+            public synchronized void increment() {
+                count++;
+            }
+
+    2. Synchronized Blocks
+        - Use synchronized blocks to synchronize only a portion of code.
+        - Example:
+            public void increment() {
+                synchronized(this) {
+                    count++;
+                }
+            }
+
+    3. Locks (java.util.concurrent.locks)
+        - Use ReentrantLock or other Lock implementations for more advanced control.
+        - Example:
+            private final ReentrantLock lock = new ReentrantLock();
+            public void increment() {
+                lock.lock();
+                try {
+                    count++;
+                } finally {
+                    lock.unlock();
+                }
+            }
+
+    4. Atomic Variables (java.util.concurrent.atomic)
+        - Use atomic classes like AtomicInteger for simple atomic operations.
+        - Example:
+            private final AtomicInteger count = new AtomicInteger(0);
+            public void increment() {
+                count.incrementAndGet();
+            }
+
+    5. Concurrent Collections
+        - Use thread-safe collections from java.util.concurrent package, like ConcurrentHashMap, CopyOnWriteArrayList, etc.
+=========================================================================================================================================================
+Q: Static synchronization vs Instance synchronization ?
+    Static Synchronization:
+        - Locks the class-level lock (Class object).
+        - Only one thread can execute any static synchronized method of the class at a time.
+        - Example:
+            public static synchronized void staticMethod() {
+                // critical section
+            }
+
+    Instance Synchronization:
+        - Locks the instance-level lock (this object).
+        - Only one thread can execute any synchronized method of the same instance at a time.
+        - Example:
+            public synchronized void instanceMethod() {
+                // critical section
+            }
+
+    Key Difference:
+        - Static synchronization is for class-level locking, while instance synchronization is for object-level locking.
+
+    Q: When to use static synchronization vs instance synchronization?
+        - Use static synchronization when you want to synchronize access to static resources shared across all instances of the class.
+        - Use instance synchronization when you want to synchronize access to instance variables or methods specific to an object.
+=========================================================================================================================================================
