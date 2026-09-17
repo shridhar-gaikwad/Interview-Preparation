@@ -22,9 +22,30 @@ Q) How to secure sensitive data in Spring Boot application (Application.properti
     Application.properties file :
         spring.datasource.username=${DB_USERNAME}
         spring.datasource.password=${DB_PASSWORD}
-    Then the deployment environment provides:
+    Then the deployment environment provides:   (OS/container environment variables.)
         DB_USERNAME=app_user
         DB_PASSWORD=********
+
+    For production, use a secret manager
+    For serious production systems, a better architecture is often:
+
+        Spring Boot
+             |
+             v
+        Secret Manager
+             |
+             +---- DB password
+             +---- API keys
+             +---- JWT signing secrets
+             +---- Encryption keys
+
+        Common options include:
+            HashiCorp Vault
+            AWS Secrets Manager
+            Azure Key Vault
+            Google Cloud Secret Manager
+            Kubernetes Secrets
+    Then your application retrieves secrets at runtime rather than keeping them in Git.
 
     Q) Can we Base64 encode the password?"
         No. Base64 is encoding, not encryption. It provides no confidentiality.

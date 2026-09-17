@@ -183,29 +183,36 @@ Q: How to identify which microservice/component is causing the delay in multiple
            Retries can help transient failures, but uncontrolled retries can create a retry storm.
 
            Use:
-
-           limited retry count
-
-           exponential backoff
-
-           jitter
-
-           retry only transient/idempotent operations where appropriate
+               limited retry count
+               exponential backoff
+               jitter
+               retry only transient/idempotent operations where appropriate
 =================================================================================================================================
 Q: Working and benefits of circuit breaker pattern ?
 
+=================================================================================================================================
 Q: How to get GC dump, Heap Dump ?
 
+=================================================================================================================================
 Q: What to take care of regarding logging in application ?
 
+=================================================================================================================================
 Q: What performance issues happens due to logging ? How to handle those performance issues ?
 
+=================================================================================================================================
 Q: Which logs are recommended for which environment ?
 
+=================================================================================================================================
 Q: Test-Driven development approach.
 
+=================================================================================================================================
 Q: Huge traffic increase in terms of kubernetes - how to prevent traffic overload ?
 
+=================================================================================================================================
 Q: Pod keeps restarting in loop - how to troubleshoot ?
 
+=================================================================================================================================
+Q: At which level we can implement rate limiting ?
+
+=================================================================================================================================
 AWS and kubernetes basics
