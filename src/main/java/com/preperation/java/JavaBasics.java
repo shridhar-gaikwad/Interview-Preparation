@@ -136,16 +136,31 @@ import java.lang.ref.WeakReference;
  * Q5: OutOfMemoryError? -> Thrown when JVM cannot allocate memory (heap exhausted).
  * Q6: Memory leak? -> Objects kept referenced unnecessarily (e.g. a static List that is never cleared)
        so heap keeps growing.
+
  * Q7: throw vs throws? -> throws DECLARES the exception on the method; throw actually
  *     THROWS an instance.
+ *
  * Q8: Heap vs Stack? -> Heap: objects, shared, large, GC, slower.
  *                      Stack: locals, per-thread, small, no GC, faster.
+ *
  * Q9: Metaspace? -> Stores class & method metadata (replaced PermGen in Java 8).
+ *
  * Q: How do you investigate memory issues in production?
  *      1. Monitor heap usage : JConsole, VisualVM, JMC (Java Mission Control)
  *      2. Capture Heap Dump : jmap -dump
  *      3. Analyze Heap Dump : Eclipse MAT, VisualVM, JProfiler
  *      4. Check GC Logs : -Xlog:gc*
+ *
+ * Q: What is JIT? -> JIT stands for Just-In-Time compiler. It is a part of the JVM that improves Java application performance
+ *      by compiling frequently executed Java bytecode into native machine code at runtime.
+ *      Normally, the flow is:
+ *          Java source code → javac → Bytecode (.class) → JVM → JIT Compiler → Native machine code
+ *
+ *      When the JVM starts, it doesn't necessarily compile all bytecode into machine code immediately. The JIT compiler identifies
+ *      frequently executed code, called hot code or hot methods, and compiles it into optimized native machine code.
+   Q: Can we override constructor in Java? -> No, Constructor overriding does not exist in Java. The reason is that constructors are
+ *      not inherited by child classes, so a child class cannot override a parent class's constructor.
+ *
  * ONE-LINER SUMMARY:
  * The JVM loads/links/initializes classes, runs bytecode, and auto-manages heap memory.
  * via GC (Young/Old generations, G1 by default); Strings are immutable while

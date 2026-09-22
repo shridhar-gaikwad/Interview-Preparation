@@ -18,7 +18,7 @@ public class StringCodingPrograms {
         }
     }
 
-    public static void findNonRepeatingCharacterUsingMap(String str) {
+    public static void findFirstNonRepeatingCharacterUsingMap(String str) {
         Map<Character, Integer> charCountMap = new HashMap<>();
         for (char c : str.toCharArray()) {
             charCountMap.put(c, charCountMap.getOrDefault(c, 0) + 1);
