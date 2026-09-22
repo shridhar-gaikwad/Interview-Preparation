@@ -64,9 +64,9 @@ Q) Explain stages in CI/CD (Build, docker push, deploy etc)
     Verify: Post-deployment, automated tests or health checks are run to ensure the application is functioning correctly in the target environment.
 
 Q) Explain full flow how Rest Api works in your project. How request is coming to controller and how response is going back to client.
-=>  "When a client sends an HTTP request, it first reaches the application's web server and Spring's request-processing
-    infrastructure. Spring MVC's DispatcherServlet acts as the front controller and identifies the appropriate controller method based
-    on the HTTP method and URL mapping.
+=>  "When a client sends an HTTP request, it first reaches the application's web server If the JWT is valid, the filter allows the request
+    to continue through the servlet/filter chain and Spring's request-processing. infrastructure. Spring MVC's DispatcherServlet acts as
+    the front controller and identifies the appropriate controller method based on the HTTP method and URL mapping.
     Before the controller executes, the request can pass through security filters and other filters/interceptors.
     The controller validates the request and delegates business logic to the service layer. The service interacts with repositories
     or external services as required. The result then travels back through the controller, and Spring serializes the response object,
