@@ -28,7 +28,6 @@ Q) How to secure sensitive data in Spring Boot application (Application.properti
 
     For production, use a secret manager
     For serious production systems, a better architecture is often:
-
         Spring Boot
              |
              v
@@ -64,8 +63,8 @@ Q) Explain stages in CI/CD (Build, docker push, deploy etc)
     Verify: Post-deployment, automated tests or health checks are run to ensure the application is functioning correctly in the target environment.
 
 Q) Explain full flow how Rest Api works in your project. How request is coming to controller and how response is going back to client.
-=>  "When a client sends an HTTP request, it first reaches the application's web server and Spring's request-processing
-    infrastructure. Spring MVC's DispatcherServlet acts as the front controller and identifies the appropriate controller method based
+=>  When a client sends an HTTP request, it first reaches the application's web server and Spring's request-processing infrastructure.
+    Spring MVC's DispatcherServlet acts as the front controller and identifies the appropriate controller method based
     on the HTTP method and URL mapping.
     Before the controller executes, the request can pass through security filters and other filters/interceptors.
     The controller validates the request and delegates business logic to the service layer. The service interacts with repositories
@@ -119,6 +118,7 @@ Q) Explain Solid Principles with examples.
         For example, if you want to add a new payment method, you can create a new class that implements a PaymentMethod interface
         instead of modifying existing payment classes.
     L — Liskov Substitution Principle
+        LSP says that objects of a subclass should be replaceable for objects of their superclass without changing the or expected behavior of the program.
         Subtypes must be substitutable for their base types. The interface should represent behavior that all implementations can actually support.
         Ex :
             class Bird {
@@ -128,14 +128,16 @@ Q) Explain Solid Principles with examples.
                 // Penguin cannot fly and  abstraction is wrong here. So, we should not have fly() method in Bird class.
             }
     I — Interface Segregation Principle
-        Clients should not be forced to depend on interfaces they do not use. For example, instead of having a single large interface for all types of vehicles, create separate interfaces for Car, Bike, and Truck.
+        Clients should not be forced to depend on interfaces they do not use.
+        Example: instead of having a single large interface for all types of vehicles, create separate interfaces for Car, Bike, and Truck.
     D — Dependency Inversion Principle
-        High-level modules should not depend on low-level modules. Both should depend on abstractions. For example, instead of a CustomerService class directly depending on a MySQLDatabase class, it should depend on a Database interface.
+        High-level modules should not depend on low-level modules. Both should depend on abstractions.
+        For example, instead of a CustomerService class directly depending on a MySQLDatabase class, it should depend on a Database interface.
 
 Q) Explain difference between application.properties and application.yml in Spring Boot. What if both are present in the project.
-=>  "Both are supported configuration formats in Spring Boot. application.properties uses key-value properties, while application.yml
+=>  Both are supported configuration formats in Spring Boot. application.properties uses key-value properties, while application.yml
     or application.yaml represents configuration in a hierarchical YAML structure.
-    Functionally, they can represent the same configuration; the choice is mainly readability and project preference."
+    Functionally, they can represent the same configuration; the choice is mainly readability and project preference.
     Properties file example:
         server.port=8080
         spring.datasource.url=jdbc:postgresql://localhost:5432/app
@@ -161,14 +163,14 @@ Q) Have 1 HashMap with null key. Put key null and value as "value1". Then put ke
     Therefore, the final value is value2.
 
 Q) Time complexity of HashMap operations (get, put, remove) in Java.
-=>  "For a HashMap, get, put, and remove are O(1) on average. In the worst case, collisions can degrade performance.
+=>  For a HashMap, get, put, and remove are O(1) on average. In the worst case, collisions can degrade performance.
     In modern Java implementations, heavily collided buckets can be treeified, giving O(log n) lookup within that bucket under
-    the relevant conditions."
+    the relevant conditions.
 
 Q) What is zookeeper in Kafka? How it is used in Kafka? What is the role of zookeeper in Kafka?
 => Historically, Kafka used ZooKeeper for cluster metadata and coordination. ZooKeeper managed information such as broker membership,
-    controller election, and cluster metadata. However, modern Kafka supports KRaft mode, where Kafka manages its metadata internally
-    without requiring ZooKeeper. So for a new Kafka deployment, I would first check whether the cluster uses ZooKeeper or KRaft.
+   controller election, and cluster metadata. However, modern Kafka supports KRaft mode, where Kafka manages its metadata internally
+   without requiring ZooKeeper. So for a new Kafka deployment, I would first check whether the cluster uses ZooKeeper or KRaft.
 
 Q) What to do when 2 beans / auto-configuration classes cause duplicate bean creation ?
 
