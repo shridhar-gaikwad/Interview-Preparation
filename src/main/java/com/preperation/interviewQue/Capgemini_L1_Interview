@@ -1,8 +1,8 @@
 Q) Introduction, Total experience, Project, Tech stack
 
 Q) Difference between @Qualifier and @Primary in Spring Framework
-=> "@Primary and @Qualifier are used when multiple Spring beans of the same type exist. @Primary marks one bean as the default choice,
-    whereas @Qualifier explicitly tells Spring which specific bean should be injected."
+=> @Primary and @Qualifier are used when multiple Spring beans of the same type exist. @Primary marks one bean as the default choice,
+   whereas @Qualifier explicitly tells Spring which specific bean should be injected.
 
 Q) How security handling is done in project. Which security framework is used (JWT, OAuth2.0) ?  Working on JWT or OAuth2.0.
 =>  In my project, we use Spring Security with JWT-based authentication. When the user authenticates successfully,
@@ -64,8 +64,8 @@ Q) Explain stages in CI/CD (Build, docker push, deploy etc)
     Verify: Post-deployment, automated tests or health checks are run to ensure the application is functioning correctly in the target environment.
 
 Q) Explain full flow how Rest Api works in your project. How request is coming to controller and how response is going back to client.
-=>  "When a client sends an HTTP request, it first reaches the application's web server If the JWT is valid, the filter allows the request
-    to continue through the servlet/filter chain and Spring's request-processing. infrastructure. Spring MVC's DispatcherServlet acts as
+=>  When a client sends an HTTP request, it first reaches the application's web server If the JWT is valid, the filter allows the request
+    to continue through the servlet/filter chain and Spring's request-processing infrastructure. Spring MVC's DispatcherServlet acts as
     the front controller and identifies the appropriate controller method based on the HTTP method and URL mapping.
     Before the controller executes, the request can pass through security filters and other filters/interceptors.
     The controller validates the request and delegates business logic to the service layer. The service interacts with repositories
@@ -128,14 +128,16 @@ Q) Explain Solid Principles with examples.
                 // Penguin cannot fly and  abstraction is wrong here. So, we should not have fly() method in Bird class.
             }
     I — Interface Segregation Principle
-        Clients should not be forced to depend on interfaces they do not use. For example, instead of having a single large interface for all types of vehicles, create separate interfaces for Car, Bike, and Truck.
+        A class should not be forced to implement methods it doesn't need.
+        Instead of one large interface: Split it into smaller interfaces where appropriate.
+        For example, instead of having a single large interface for all types of vehicles, create separate interfaces for Car, Bike, and Truck.
     D — Dependency Inversion Principle
         High-level modules should not depend on low-level modules. Both should depend on abstractions. For example, instead of a CustomerService class directly depending on a MySQLDatabase class, it should depend on a Database interface.
 
 Q) Explain difference between application.properties and application.yml in Spring Boot. What if both are present in the project.
-=>  "Both are supported configuration formats in Spring Boot. application.properties uses key-value properties, while application.yml
+=>  Both are supported configuration formats in Spring Boot. application.properties uses key-value properties, while application.yml
     or application.yaml represents configuration in a hierarchical YAML structure.
-    Functionally, they can represent the same configuration; the choice is mainly readability and project preference."
+    Functionally, they can represent the same configuration; the choice is mainly readability and project preference.
     Properties file example:
         server.port=8080
         spring.datasource.url=jdbc:postgresql://localhost:5432/app
@@ -161,9 +163,9 @@ Q) Have 1 HashMap with null key. Put key null and value as "value1". Then put ke
     Therefore, the final value is value2.
 
 Q) Time complexity of HashMap operations (get, put, remove) in Java.
-=>  "For a HashMap, get, put, and remove are O(1) on average. In the worst case, collisions can degrade performance.
+=>  For a HashMap, get, put, and remove are O(1) on average. In the worst case, collisions can degrade performance.
     In modern Java implementations, heavily collided buckets can be treeified, giving O(log n) lookup within that bucket under
-    the relevant conditions."
+    the relevant conditions.
 
 Q) What is zookeeper in Kafka? How it is used in Kafka? What is the role of zookeeper in Kafka?
 => Historically, Kafka used ZooKeeper for cluster metadata and coordination. ZooKeeper managed information such as broker membership,
@@ -175,8 +177,8 @@ Q) What to do when 2 beans / auto-configuration classes cause duplicate bean cre
 Q) Spring Boot Application takes a long time to start because of heavy bean initialization.
 =>  First, I would identify which beans are causing the startup delay rather than immediately making everything lazy.
     I would inspect startup metrics/logs and identify expensive initialization such as database connections, external API calls,
-    large cache loading, or expensive object creation. Then I would move non-essential work out of startup,
-    initialize it asynchronously or on demand, and optimize the expensive initialization.
+    large cache loading, or expensive object creation. Then I would move non-essential work out of startup, initialize it asynchronously or on demand,
+    and optimize the expensive initialization.
     What I'd investigate :
         1. Startup logs
         2. Bean initialization time
@@ -212,7 +214,6 @@ Q) Alternative to @Lazy for heavy bean initialization in Spring Boot.
         For work that should start after the application is ready:
         @Component
         public class CacheInitializer {
-
             @EventListener(ApplicationReadyEvent.class)
             public void initialize() {
                 // load cache
