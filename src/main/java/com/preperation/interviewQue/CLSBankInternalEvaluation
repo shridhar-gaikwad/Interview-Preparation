@@ -116,8 +116,8 @@ Q: What is dirty checking in Hibernate?
 
 		2. @Transactional			// required
 
-"Hibernate maintains the original state of managed entities. During flush, it compares the current state with the original state. If it detects a change,
-it generates the required SQL update. This is called dirty checking."
+    "Hibernate maintains the original state of managed entities. During flush, it compares the current state with the original state. If it detects a change,
+    it generates the required SQL update. This is called dirty checking."
 =========================================================================================================================================================
 Q: What is CQRS?
 	CQRS stands for Command Query Responsibility Segregation. IT is an architectural pattern that separates read operations (Queries) from write operations (Commands).
@@ -365,7 +365,6 @@ Q: What is CORS ?
                 @RestController
                 @CrossOrigin(origins = "http://localhost:3000")					// Only Frontend app running on port 3000 can access this API.
                 public class CustomerController {
-
                     @GetMapping("/customers")
                     public List<Customer> getCustomers() {
                         return List.of();
@@ -501,6 +500,7 @@ Q: I have static block, variable, and method ? What will be execution flow ?
 
     Example:
         public class Example {
+
             static int staticVar = initializeStaticVar();
             static {
                 System.out.println("Static block executed");
@@ -523,6 +523,7 @@ Q: I have static block, variable, and method ? What will be execution flow ?
             public static void main(String[] args) {
                 new Example();
             }
+
         }
 
     Output:
