@@ -31,7 +31,8 @@ Q: What are SOLID principles?
 	3. L — Liskov Substitution Principle
 		A child class should be replaceable for its parent without breaking the application. A child class should be usable wherever
 		its parent class is expected, without breaking the program.
-		Example: if Bird has a fly() method, making Penguin extends Bird can violate LSP because penguins cannot fly.
+		Example: if BankAccount has a withdraw() method, making FixedDepositAccount extends BankAccount can violate LSP because
+		we cannot withdraw from FixedDepositAccount just like SavingBankAccount.
 
 	4. I — Interface Segregation Principle
 		A class should not be forced to implement methods it doesn't need.
