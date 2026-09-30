@@ -1,0 +1,2 @@
+The controller manages Kafka's cluster metadata.
+
