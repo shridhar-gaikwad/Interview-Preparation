@@ -46,7 +46,7 @@ Q) How to secure sensitive data in Spring Boot application (Application.properti
             Kubernetes Secrets
     Then your application retrieves secrets at runtime rather than keeping them in Git.
 
-    Q) Can we Base64 encode the password?"
+    Q) Can we Base64 encode the password?
         No. Base64 is encoding, not encryption. It provides no confidentiality.
 
 Q) Explain stages in CI/CD (Build, docker push, deploy etc)
@@ -63,7 +63,7 @@ Q) Explain stages in CI/CD (Build, docker push, deploy etc)
     Verify: Post-deployment, automated tests or health checks are run to ensure the application is functioning correctly in the target environment.
 
 Q) Explain full flow how Rest Api works in your project. How request is coming to controller and how response is going back to client.
-=>  When a client sends an HTTP request, it first reaches the application's web server If the JWT is valid, the filter allows the request
+=>  When a client sends an HTTP request, it first reaches the application's web server. If the JWT is valid, the filter allows the request
     to continue through the servlet/filter chain and Spring's request-processing infrastructure. Spring MVC's DispatcherServlet acts as
     the front controller and identifies the appropriate controller method based on the HTTP method and URL mapping.
     Before the controller executes, the request can pass through security filters and other filters/interceptors.
@@ -173,6 +173,11 @@ Q) What is zookeeper in Kafka? How it is used in Kafka? What is the role of zook
    without requiring ZooKeeper. So for a new Kafka deployment, I would first check whether the cluster uses ZooKeeper or KRaft.
 
 Q) What to do when 2 beans / auto-configuration classes cause duplicate bean creation ?
+    First I would identify why both beans are being registered. If it's an auto-configuration providing a default bean,
+    I would use @ConditionalOnMissingBean so the auto-configuration backs off when the application provides its own bean.
+    If both beans are genuinely required, I would give them different names and use @Qualifier, or use @Primary when one should be the default.
+    If an entire auto-configuration isn't needed, I would exclude it using @SpringBootApplication(exclude = ...).
+    I would avoid enabling spring.main.allow-bean-definition-overriding as a generic fix because it can hide configuration problems.
 
 Q) Spring Boot Application takes a long time to start because of heavy bean initialization.
 =>  First, I would identify which beans are causing the startup delay rather than immediately making everything lazy.
