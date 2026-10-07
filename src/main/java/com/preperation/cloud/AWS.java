@@ -96,6 +96,77 @@ package com.preperation.cloud;
  *   BEST PRACTICE: least privilege, enable MFA, prefer ROLES over access keys.
  *
  * -------------------------------------------------------------------------------------
+ * SHARED RESPONSIBILITY MODEL (almost always asked)
+ * -------------------------------------------------------------------------------------
+ *   AWS is responsible FOR the cloud: physical hardware, data centers, network
+ *   infrastructure, hypervisor, and the managed service internals.
+ *   YOU are responsible IN the cloud: data, IAM config, OS patching (on EC2),
+ *   firewall/Security Group rules, encryption choices, and application-level security.
+ *   -> The split shifts with the service model: on EC2 you patch the OS; on RDS/Lambda
+ *      AWS patches the OS/runtime and you're only responsible for data & access config.
+ *
+ * -------------------------------------------------------------------------------------
+ * SECURITY GROUP vs NACL (common follow-up to Q8)
+ * -------------------------------------------------------------------------------------
+ *   Security Group (SG)                     | Network ACL (NACL)
+ *   ---------------------------------------- | ----------------------------------------
+ *   Operates at INSTANCE level               | Operates at SUBNET level
+ *   STATEFUL (return traffic auto-allowed)   | STATELESS (must allow both directions)
+ *   Only ALLOW rules                         | Supports ALLOW and DENY rules
+ *   Evaluates ALL rules before deciding       | Rules processed IN ORDER (lowest number first)
+ *
+ * -------------------------------------------------------------------------------------
+ * EC2 PRICING MODELS (cost-focused question)
+ * -------------------------------------------------------------------------------------
+ *   - On-Demand   -> pay per second/hour, no commitment; good for unpredictable workloads.
+ *   - Reserved    -> 1-3 year commitment for big discount; steady, predictable workloads.
+ *   - Spot        -> bid on spare capacity, up to ~90% cheaper, can be reclaimed anytime;
+ *                    good for fault-tolerant/batch jobs.
+ *   - Savings Plans -> flexible $/hour commitment across instance families, like Reserved
+ *                    but less rigid.
+ *   - Dedicated Host/Instance -> physical server dedicated to you (licensing/compliance).
+ *
+ * -------------------------------------------------------------------------------------
+ * S3 STORAGE CLASSES & CONSISTENCY (very common)
+ * -------------------------------------------------------------------------------------
+ *   - Standard            -> frequently accessed data, millisecond access.
+ *   - Intelligent-Tiering -> auto-moves objects between tiers based on access pattern.
+ *   - Standard-IA / One Zone-IA -> infrequent access, cheaper storage, retrieval fee.
+ *   - Glacier / Glacier Deep Archive -> archival, retrieval takes minutes to hours.
+ *   CONSISTENCY: S3 provides STRONG READ-AFTER-WRITE consistency for all operations
+ *   (PUTs and DELETEs) since Dec 2020 - no more "eventual consistency" caveat to worry about.
+ *
+ * -------------------------------------------------------------------------------------
+ * VPC COMPONENTS (networking deep-dive)
+ * -------------------------------------------------------------------------------------
+ *   - Subnet            -> a slice of a VPC's IP range tied to one AZ.
+ *   - Public subnet     -> has a route to an Internet Gateway (IGW).
+ *   - Private subnet    -> no direct route to internet; outbound-only via NAT Gateway.
+ *   - Internet Gateway  -> allows a VPC to talk to the public internet.
+ *   - NAT Gateway        -> lets PRIVATE subnet resources reach the internet (outbound
+ *                          only) without being reachable from outside.
+ *   - Route Table        -> decides where network traffic from a subnet is directed.
+ *   TYPICAL PATTERN: web/app tier in public subnet behind ELB, DB tier in private subnet.
+ *
+ * -------------------------------------------------------------------------------------
+ * RDS HIGH AVAILABILITY: Multi-AZ vs Read Replica (frequently confused)
+ * -------------------------------------------------------------------------------------
+ *   Multi-AZ                                  | Read Replica
+ *   ------------------------------------------ | ------------------------------------------
+ *   For DISASTER RECOVERY / failover           | For READ SCALING (offload read traffic)
+ *   Synchronous replication to standby          | Asynchronous replication
+ *   Standby NOT readable; auto-failover on fail | Replica IS readable; promote manually
+ *   Same region only                            | Can be cross-region
+ *
+ * -------------------------------------------------------------------------------------
+ * AWS WELL-ARCHITECTED FRAMEWORK (design-principles question)
+ * -------------------------------------------------------------------------------------
+ *   6 pillars: Operational Excellence, Security, Reliability, Performance Efficiency,
+ *   Cost Optimization, Sustainability.
+ *   -> Interviewers often ask "how would you design a highly available/cost-efficient
+ *      system?" - structure your answer around these pillars.
+ *
+ * -------------------------------------------------------------------------------------
  * SCALABILITY & HIGH AVAILABILITY
  * -------------------------------------------------------------------------------------
  *   - Vertical scaling   -> bigger EC2 instance.
@@ -126,6 +197,31 @@ package com.preperation.cloud;
  * Q13: What is a VPC? -> Your own isolated virtual network within AWS.
  * Q14: How to reduce AWS cost? -> Right-size instances, Reserved/Spot instances,
  *     auto scaling, S3 lifecycle policies, and delete idle resources.
+ * Q15: What is the Shared Responsibility Model? -> AWS secures the cloud (hardware,
+ *     network, hypervisor); you secure what's IN the cloud (data, IAM, OS patches,
+ *     SG rules) - the exact split depends on whether it's IaaS, PaaS, or serverless.
+ * Q16: Security Group vs NACL? -> SG is stateful & instance-level (allow-only); NACL is
+ *     stateless & subnet-level (allow + deny, rule order matters).
+ * Q17: Multi-AZ vs Read Replica in RDS? -> Multi-AZ = synchronous standby for failover/DR
+ *     (not readable); Read Replica = asynchronous copy for scaling reads (readable, can
+ *     be promoted to a standalone DB).
+ * Q18: On-Demand vs Reserved vs Spot instances? -> On-Demand = no commitment, pay as you
+ *     go; Reserved = 1-3yr commitment for discount; Spot = spare capacity at steep
+ *     discount but can be reclaimed - use for fault-tolerant/batch workloads.
+ * Q19: What is a NAT Gateway used for? -> Lets instances in a PRIVATE subnet initiate
+ *     outbound internet traffic (e.g. for updates) without being directly reachable
+ *     from the internet.
+ * Q20: What happens when an EC2 instance in an Auto Scaling Group fails a health check?
+ *     -> ASG terminates the unhealthy instance and launches a replacement automatically
+ *     to maintain the desired capacity.
+ * Q21: How would you design a highly available, fault-tolerant 3-tier web app on AWS?
+ *     -> Route 53 -> CloudFront/ALB -> EC2 Auto Scaling Group across multiple AZs (public
+ *     subnets) -> RDS Multi-AZ (private subnet) + ElastiCache for caching + S3 for static
+ *     assets; secure with SGs/NACLs and IAM roles (no hardcoded keys).
+ * Q22: What is the difference between stopping and terminating an EC2 instance? ->
+ *     Stop preserves the instance (and EBS root volume) for restart later, billing for
+ *     compute pauses; Terminate permanently deletes the instance (and, by default, any
+ *     EBS volumes marked "delete on termination").
  *
  * ONE-LINER SUMMARY:
  * AWS provides on-demand, pay-as-you-go compute (EC2/Lambda), storage (S3), databases
