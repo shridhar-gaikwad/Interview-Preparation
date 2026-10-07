@@ -3,9 +3,14 @@ Q: Write Java code which take generic input and return generic output.
     public static <T, R> R processInput(T input, java.util.function.Function<T, R> processor) {
         return processor.apply(input);
     }
+
+    Generics allow Java code to work with different data types while maintaining type safety.
+    <T> declares a generic type parameter, while T uses that already-declared type.
+    class Box<T> means T belongs to the class; <T> T func(T t) means T belongs only to that method.
+    static <T> T func1(T t) accepts a value of any type and returns the same type without requiring casting.
 =================================================================================================================================
 Q: Suddenly application starts throwing 500 errors. What to do ? provide steps.
-    When an application suddenly starts throwing 500 Internal Server Errors in production, a systematic triage approach is required
+    When an application suddenly starts throwing 500 Internal Server Errors in production, a systematic approach is required
     to isolate whether the issue is infrastructural, code-related, or caused by a downstream dependency.
         1.Check Centralized Logs & Dashboards:
             Step 1: Triage
@@ -77,7 +82,7 @@ Q: Found DB delays in application - how will you improve that provide steps.
        Instead of:
         SELECT millions of rows
 =================================================================================================================================
-Q: Microservices not responding within time - what to investigate and and resolve ?
+Q: Microservices not responding within time - what to investigate and resolve ?
     When microservices fail to respond within an acceptable timeframe, it typically points to resource starvation, network issues, or cascading blocks.
     1. Determine the scope
         Check:
@@ -141,7 +146,7 @@ Q: How to identify which microservice/component is causing the delay in multiple
              ↓
         Inventory Service
              ↓
-        Database
+          Database
 
     A single request could generate:
         Total latency = 4 seconds
@@ -169,14 +174,14 @@ Q: How to identify which microservice/component is causing the delay in multiple
 
     Q: How do you prevent these problems?
         1. Timeouts
-        Every remote call should have an appropriate timeout.
-        Service A
-           |
-           | timeout = 2 sec            // Never allow requests to wait indefinitely.
-           ↓
-        Service B
+            Every remote call should have an appropriate timeout.
+            Service A
+               |
+               | timeout = 2 sec            // Never allow requests to wait indefinitely.
+               ↓
+            Service B
 
-        2. 2. Circuit breaker
+        2. Circuit breaker
            If Service B is unhealthy, Service A should stop continuously calling it.
 
         3. Retry carefully
@@ -189,9 +194,96 @@ Q: How to identify which microservice/component is causing the delay in multiple
                retry only transient/idempotent operations where appropriate
 =================================================================================================================================
 Q: Working and benefits of circuit breaker pattern ?
+    The Circuit Breaker Pattern is a resilience pattern used in Microservices to prevent cascading failures when a downstream service becomes slow or unavailable.
+    Order Service → Payment Service
 
+    Whenever an order is created, Order Service calls Payment Service.
+
+    If Payment Service is down and Order Service keeps sending requests:
+        Threads get blocked waiting for responses.
+        Connection pools get exhausted.
+        Response time increases.
+        Eventually Order Service also becomes unavailable.
+
+    This is called a cascading failure.
+    Circuit Breaker prevents this situation.
+
+    Circuit Breaker Works in three states:
+    1. Closed State (Normal State)
+        - All requests are allowed.
+        - Circuit Breaker monitors success and failure rates.
+    2. Open State (Failure State)
+        - If failures exceed a threshold (e.g., 5 failures in 10 seconds / 50%), the circuit breaker trips to Open state.
+        - Requests are short-circuited, and a fallback response is returned immediately without calling Payment Service.
+          Ex: "Payment service temporarily unavailable. Please try again later."
+    3. Half-Open State
+        - After a timeout period (e.g., 30 seconds), the circuit breaker transitions to Half-Open state.
+        - A limited number of test requests are allowed to check if Payment Service has recovered.
+        - If the test requests succeed, the circuit breaker resets to Closed state; otherwise, it returns to Open state.
+    Benefits:
+        - Prevents cascading failures across microservices.
+        - Improves system stability and responsiveness.
+        - Protects resources by avoiding unnecessary calls to failing services.
+        - Automatic recovery when the downstream service becomes healthy again.
 =================================================================================================================================
 Q: How to get GC dump, Heap Dump ?
+    In Java applications, especially in Production, GC logs and Heap Dumps are used to analyze:
+        Memory leaks
+        OutOfMemoryError issues
+        High GC pauses
+        Performance degradation
+        Excessive memory consumption
+
+    1. Heap Dump
+        A Heap Dump is a snapshot of all objects present in JVM memory at a specific point in time.
+        It helps identify:
+            Memory leaks
+            Large object retention
+            Duplicate objects
+            OutOfMemoryError root cause
+
+        Generate Heap Dump Using jmap
+            Find process id:
+                jps -l
+
+        Automatically Generate Heap Dump on OOM
+            Add JVM argument:
+                -XX:+HeapDumpOnOutOfMemoryError
+                -XX:HeapDumpPath=/path/to/dump
+
+        Analyze Heap Dump
+        Tools:
+            Eclipse MAT (Memory Analyzer Tool)
+            VisualVM
+            JProfiler
+            YourKit
+    ---------------------------------------------------------------------------------
+    2. GC Dump / GC Logs
+        GC logs provide information about:
+            Garbage collection frequency
+            Pause times
+            Heap utilization
+            Young GC
+            Full GC
+
+        Used when application becomes slow or experiences high memory pressure.
+        Enable GC Logging (Java 17)
+            Add JVM arguments:
+                -Xlog:gc*:file=/path/to/gc.log:time,uptime,level,tags
+        Analyze GC Logs
+        Tools:
+            GCViewer
+            GCEasy
+            JClarity Censum
+
+    # Difference Between GC Log and Heap Dump
+    | GC Log                             | Heap Dump                        |
+    | ---------------------------------- | -------------------------------- |
+    | Tracks garbage collection activity | Snapshot of complete heap memory |
+    | Used for performance analysis      | Used for memory leak analysis    |
+    | Small text file                    | Large .hprof file                |
+    | Continuous monitoring              | Point-in-time capture            |
+    | Helps analyze GC pauses            | Helps identify retained objects  |
 
 =================================================================================================================================
 Q: What to take care of regarding logging in application ?
