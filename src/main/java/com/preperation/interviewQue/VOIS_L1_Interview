@@ -287,7 +287,39 @@ Q: How to get GC dump, Heap Dump ?
 
 =================================================================================================================================
 Q: What to take care of regarding logging in application ?
+    1. Logging Levels
 
+        TRACE/DEBUG → For detailed developer troubleshooting. Should only be enabled in Dev/Test environments.
+
+        INFO → For high‑level application flow (startup, shutdown, major events). Safe for all environments.
+
+        WARN → For recoverable issues or unexpected states that don’t break functionality.
+
+        ERROR → For failures that need immediate attention. Always logged in all environments.
+
+        FATAL (if supported) → For critical system failures requiring shutdown or urgent intervention.
+
+    2. Environment‑Specific Logging
+
+        Dev/Test → Enable DEBUG/TRACE for detailed insights. Use console logging or file logging with rotation.
+
+        QA → INFO/WARN/ERROR. Avoid TRACE/DEBUG to reduce log volume and performance overhead.
+
+        Production → INFO/WARN/ERROR only. Avoid TRACE/DEBUG to reduce performance overhead and log volume.
+
+    3. Additional Considerations
+
+        Centralized Logging → Use tools like ELK (Elasticsearch, Logstash, Kibana), Splunk, or CloudWatch for aggregation.
+
+        Log Rotation & Retention → Prevent disk space issues by rotating and archiving logs.
+
+        Structured Logging → Prefer JSON logs for easy parsing and integration with monitoring systems.
+
+        Correlation IDs → Essential in microservices + Kafka setups to trace requests across services.
+
+        Security → Never log sensitive data (passwords, credit card numbers, access tokens).
+
+        Alerting → Integrate ERROR/WARN logs with monitoring/alerting systems (Prometheus, Grafana, etc.).
 =================================================================================================================================
 Q: What performance issues happens due to logging ? How to handle those performance issues ?
 
