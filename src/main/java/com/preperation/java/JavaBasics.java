@@ -14,7 +14,7 @@ import java.lang.ref.WeakReference;
  * action (String immutability vs builders, GC eligibility, class loaders, static-init order, throw/throws).
  *
  * -------------------------------------------------------------------------------------
- * STRING vs STRINGBUILDER vs STRINGBUFFER
+ * STRING vs STRINGBUILDER vs
  * -------------------------------------------------------------------------------------
  *   Feature       | String              | StringBuilder            | StringBuffer
  *   ------------- | ------------------- | ------------------------ | ---------------------

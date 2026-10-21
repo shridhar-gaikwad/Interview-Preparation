@@ -133,7 +133,29 @@ Apply the appropriate fix
         Thread exhaustion  → tune pool/concurrency
         Large response     → pagination/compression
         Repeated calls     → caching
+
+=====================================================================================================================================
+Explain how you structure a REST API in Java Spring Boot for clean, reusable OOP design ?
+    1.  I structure my Spring Boot REST APIs using a layered architecture: controller, service, and repository.
+        Controllers handle request/response mapping only, while services contain the business logic and enforce use-cases.
+        Repositories focus purely on persistence with Hibernate/JPA or JDBC, keeping concerns separated.
+    2.  For OOP cleanliness, I design interfaces for services and use dependency injection so implementation details stay hidden.
+        I keep DTOs distinct from entities, which reduces coupling and prevents accidental persistence-layer leakage into API contracts.
+        I also follow consistent naming conventions: resources in controllers, operations in services, and queries in repositories.
+    3.  To make code reusable, I implement shared validation and error handling using @ControllerAdvice and custom exception types.
+        For example, I map domain errors to meaningful HTTP statuses and structured error bodies. This improves client integration and
+        keeps controllers thin.
+    4.  Security is integrated without polluting business logic: I use Spring Security with JWT/OAuth2 flows at the
+        filter/configuration layer, and I keep authorization decisions close to service methods or method-level security.
+        That way, business code remains testable and focused.
+    5.  I also standardize API response structures, including pagination and metadata when needed, and I enforce consistent request
+        validation using Bean Validation annotations. For cross-cutting concerns like logging and tracing,
+        I rely on filters/interceptors and centralized observability, rather than scattering code across endpoints.
+    6.  In practice, when I debug production issues in distributed event-driven services, having a clear separation of concerns helps me
+        localize problems quickly—whether it’s serialization/validation, service logic, persistence behavior,
+        or security—without rewriting large sections.
  */
+
 
 public class RESTfulAPI {
 
