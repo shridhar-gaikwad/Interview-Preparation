@@ -1,6 +1,6 @@
-package com.preperation.spring.mvcPattern.repository;
+package com.preperation.java.spring.mvcPattern.repository;
 
-import com.preperation.spring.mvcPattern.model.Employee;
+import com.preperation.java.spring.mvcPattern.model.Employee;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 

@@ -1,8 +1,7 @@
-package com.preperation.spring.mvcPattern.service;
+package com.preperation.java.spring.mvcPattern.service;
 
-import com.preperation.spring.mvcPattern.model.Employee;
-import com.preperation.spring.mvcPattern.repository.EmployeeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.preperation.java.spring.mvcPattern.model.Employee;
+import com.preperation.java.spring.mvcPattern.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

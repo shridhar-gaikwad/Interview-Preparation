@@ -1,8 +1,7 @@
-package com.preperation.spring.mvcPattern.controller;
+package com.preperation.java.spring.mvcPattern.controller;
 
-import com.preperation.spring.mvcPattern.model.Employee;
-import com.preperation.spring.mvcPattern.service.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.preperation.java.spring.mvcPattern.model.Employee;
+import com.preperation.java.spring.mvcPattern.service.EmployeeService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

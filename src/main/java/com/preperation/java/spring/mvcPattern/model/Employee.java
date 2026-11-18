@@ -1,4 +1,4 @@
-package com.preperation.spring.mvcPattern.model;
+package com.preperation.java.spring.mvcPattern.model;
 
 public class Employee {
 
