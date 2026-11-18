@@ -1,4 +1,4 @@
-package com.preperation.spring;
+package com.preperation.java.spring;
 /*
 Q: What is a RESTful API, and what are the key principles?
     A: REST is an architectural style for building APIs around resources. A RESTful API typically uses HTTP methods such as

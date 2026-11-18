@@ -1,4 +1,4 @@
-package com.preperation.spring;
+package com.preperation.java.spring;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

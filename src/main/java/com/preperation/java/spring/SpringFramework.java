@@ -1,4 +1,4 @@
-package com.preperation.spring;
+package com.preperation.java.spring;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
